@@ -1,0 +1,53 @@
+{
+  "name": "start-noframework",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch-css": "sass --watch src/.:build/",
+    "watch-js": "watchify src/index.js -o build/index.js",
+    "watch-server": "nodemon server/index.js",
+    "watch": "concurrently \"npm:watch-*\"",
+    "build-js": "browserify src/index.js -o build/index.js -p tinyify",
+    "build-css": "sass src/.:build/ --style compressed",
+    "build": "concurrently \"npm:build-*\""
+  },
+  "dependencies": {
+    "@forgjs/noframework": "^1.2.0",
+    "express": "^4.17.1",
+    "feather-icons": "^4.26.0",
+    "mongoose": "^5.9.5",
+    "socket.io": "^2.3.0",
+    "socket.io-client": "^2.3.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.7.7",
+    "@babel/preset-env": "^7.7.7",
+    "babelify": "^10.0.0",
+    "browserify": "^16.5.0",
+    "concurrently": "^5.0.2",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-jest": "^22.17.0",
+    "nodemon": "^2.0.2",
+    "sass": "^1.24.3",
+    "tinyify": "^2.5.2",
+    "watchify": "^3.11.1"
+  },
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            "@babel/preset-env"
+          ]
+        }
+      ]
+    ]
+  },
+  "author": "",
+  "license": "ISC"
+}

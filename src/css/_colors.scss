@@ -1,0 +1,27 @@
+// side bar
+
+$side-bar-bg: linear-gradient(0deg, rgba(107, 52, 255, 1) 16.5%, rgba(51, 159, 247, 1) 81%);
+$side-bar-fg: #fff;
+$side-bar-badge-bg: #e84118;
+$side-bar-search-bg: #dcdde1;
+$side-bar-search-fg: #2f3640;
+
+$contacts-alphabet-fg: #dcdde1;
+$contacts-alphabet-fg-current: #0097e6;
+// chat
+
+$chat-head-bg: #dcdde1;
+$chat-head-fg: #2f3640;
+
+$chat-message-me-bg: #0097e6;
+$chat-message-me-fg: #fff;
+
+$chat-send-message-button-bg: #0097e6;
+$chat-send-message-button-fg: #fff;
+
+$chat-input-message-bg: #dcdde1;
+
+$chat-message-bg: #353b48;
+$chat-message-fg: #f5f6fa;
+
+$box-shadow: 0 2px 3px rgba(0, 0, 0, 0.16), 0 2px 3px rgba(0, 0, 0, 0.23);

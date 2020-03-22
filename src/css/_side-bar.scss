@@ -1,0 +1,78 @@
+@use 'colors';
+@use 'contacts';
+
+.side-bar {
+  height: 100vh;
+  display: flex;
+  position: fixed;
+  width: 100vw;
+  flex-direction: row;
+  align-items: center;
+  left: -100%;
+  transform: translateX(70px);
+  transition: transform 200ms ease-in-out;
+  z-index: 99;
+
+  &.open {
+    transform: translateX(100%);
+    .closed {
+      display: none;
+    }
+
+    .opened {
+      display: block;
+    }
+  }
+
+  .opened {
+    display: none;
+  }
+
+  .shortcuts {
+    background-image: colors.$side-bar-bg;
+    width: 70px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .last-users {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+    }
+
+    .user {
+      width: 50px;
+      height: 50px;
+      border-radius: 50px;
+      background-position: center;
+      background-size: cover;
+      border: 2px solid colors.$side-bar-fg;
+      margin-bottom: 5px;
+      position: relative;
+      cursor: pointer;
+
+      &.badge::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        background-color: colors.$side-bar-badge-bg;
+        width: 7px;
+        height: 7px;
+        border-radius: 7px;
+      }
+    }
+
+    .me {
+      margin-top: 50px;
+      margin-bottom: 50px;
+    }
+
+    .show-all-contacts {
+      color: colors.$side-bar-fg;
+      padding-bottom: 25px;
+    }
+  }
+}

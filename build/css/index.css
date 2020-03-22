@@ -1,0 +1,233 @@
+.input {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 30px;
+  padding: 5px;
+}
+.input svg {
+  width: 18px;
+  height: 18px;
+  margin-right: 5px;
+  margin-left: 5px;
+}
+.input input {
+  flex: 1;
+  height: 30px;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  color: inherit;
+  font-size: 1em;
+  padding-left: 5px;
+}
+
+.contacts {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f6fa;
+  padding: 1em;
+  height: 100%;
+}
+.contacts h2 {
+  font-size: 2em;
+}
+.contacts .input {
+  width: 100%;
+  margin-top: 14px;
+  background-color: #dcdde1;
+  color: #2f3640;
+}
+.contacts .contact-list {
+  display: flex;
+  margin-top: 15px;
+  width: 100%;
+  flex: 1;
+  height: 90%;
+}
+.contacts .contact-list .list {
+  flex: 1;
+  height: 100%;
+  min-height: min-content;
+  overflow: scroll;
+}
+.contacts .contact-list .list div {
+  padding: 15px;
+  cursor: pointer;
+}
+.contacts .contact-list .alphabet {
+  width: 30px;
+  min-height: min-content;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  color: #dcdde1;
+}
+.contacts .contact-list .alphabet .current {
+  color: #0097e6;
+}
+
+.side-bar {
+  height: 100vh;
+  display: flex;
+  position: fixed;
+  width: 100vw;
+  flex-direction: row;
+  align-items: center;
+  left: -100%;
+  transform: translateX(70px);
+  transition: transform 200ms ease-in-out;
+  z-index: 99;
+}
+.side-bar.open {
+  transform: translateX(100%);
+}
+.side-bar.open .closed {
+  display: none;
+}
+.side-bar.open .opened {
+  display: block;
+}
+.side-bar .opened {
+  display: none;
+}
+.side-bar .shortcuts {
+  background-image: linear-gradient(0deg, #6b34ff 16.5%, #339ff7 81%);
+  width: 70px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.side-bar .shortcuts .last-users {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+.side-bar .shortcuts .user {
+  width: 50px;
+  height: 50px;
+  border-radius: 50px;
+  background-position: center;
+  background-size: cover;
+  border: 2px solid #fff;
+  margin-bottom: 5px;
+  position: relative;
+  cursor: pointer;
+}
+.side-bar .shortcuts .user.badge::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  background-color: #e84118;
+  width: 7px;
+  height: 7px;
+  border-radius: 7px;
+}
+.side-bar .shortcuts .me {
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+.side-bar .shortcuts .show-all-contacts {
+  color: #fff;
+  padding-bottom: 25px;
+}
+
+.chat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #dcdde1;
+  margin-left: 70px;
+}
+.chat .input-message {
+  background-color: #dcdde1;
+  padding: 15px;
+  display: flex;
+}
+.chat .input-message .input {
+  flex: 1;
+  background-color: #fff;
+}
+.chat .input-message .input input {
+  padding-left: 15px;
+}
+.chat .input-message .send-button {
+  background-color: #0097e6;
+  border-radius: 50px;
+  width: 50px;
+  height: 50px;
+  border: none;
+  margin-left: 5px;
+  color: #fff;
+}
+.chat .input-message .send-button svg {
+  transform: translate(-2px, 3px);
+}
+.chat .head {
+  color: #2f3640;
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.chat .messages {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px 20px 0px 0px;
+  background-color: #fff;
+  height: 100%;
+}
+.chat .messages .message {
+  align-self: flex-end;
+  padding: 12px;
+  max-width: 50%;
+  margin-top: 5px;
+  background-color: #353b48;
+  color: #f5f6fa;
+  border-radius: 15px 0px 0px 15px;
+}
+.chat .messages .message.first {
+  border-radius: 15px 15px 0px 15px;
+}
+.chat .messages .message.last {
+  border-radius: 15px 0px 15px 15px;
+}
+.chat .messages .message.me {
+  background-color: #0097e6;
+  color: #fff;
+  align-self: flex-start;
+  border-radius: 0px 15px 15px 0px;
+}
+.chat .messages .message.me.first {
+  border-radius: 15px 15px 15px 0px;
+}
+.chat .messages .message.me.last {
+  border-radius: 0px 15px 15px 15px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  width: 100vw;
+  min-height: 100vh;
+  font-family: sans-serif;
+  font-size: 18px;
+}
+
+.app {
+  width: 100vw;
+  min-height: 100vh;
+  display: flex;
+}
+
+/*# sourceMappingURL=index.css.map */
