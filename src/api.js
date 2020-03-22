@@ -1,6 +1,10 @@
 class Api {
   constructor() {
-    this.token = null;
+    this.token = localStorage.getItem('token') || null;
+  }
+
+  init() {
+
   }
 }
 
