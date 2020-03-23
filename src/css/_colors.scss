@@ -1,6 +1,6 @@
 // side bar
 
-$side-bar-bg: linear-gradient(0deg, rgba(107, 52, 255, 1) 16.5%, rgba(51, 159, 247, 1) 81%);
+$side-bar-bg: linear-gradient(0deg, #6b34ff 16.5%, #339ff7 81%);
 $side-bar-fg: #fff;
 $side-bar-badge-bg: #e84118;
 $side-bar-search-bg: #dcdde1;
@@ -23,5 +23,7 @@ $chat-input-message-bg: #dcdde1;
 
 $chat-message-bg: #353b48;
 $chat-message-fg: #f5f6fa;
+
+$input-bg: #dcdde1;
 
 $box-shadow: 0 2px 3px rgba(0, 0, 0, 0.16), 0 2px 3px rgba(0, 0, 0, 0.23);

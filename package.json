@@ -15,8 +15,11 @@
   },
   "dependencies": {
     "@forgjs/noframework": "^1.2.0",
+    "babel-polyfill": "^6.26.0",
+    "bcrypt": "^4.0.1",
     "express": "^4.17.1",
     "feather-icons": "^4.26.0",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.5",
     "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0"

@@ -1,0 +1,53 @@
+@use 'colors';
+
+.log-in,
+.sign-up {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+
+  h2 {
+    margin-bottom: 20px;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5em;
+    box-shadow: colors.$box-shadow;
+    width: 50%;
+    border-radius: 30px;
+
+    .input {
+      background-color: colors.$input-bg;
+      margin-bottom: 0.5em;
+      input {
+        padding-left: 1em;
+      }
+    }
+
+    div {
+      margin-top: 1em;
+      font-size: 0.8em;
+      .to-sign-up {
+        background-color: transparent;
+        text-decoration: underline;
+        border: none;
+        font-size: 1em;
+        cursor: pointer;
+      }
+    }
+
+    .login-button {
+      background-color: colors.$chat-send-message-button-bg;
+      border: none;
+      padding: 10px 10px;
+      color: colors.$chat-send-message-button-fg;
+      margin-top: 1em;
+      border-radius: 30px;
+      font-size: 1em;
+    }
+  }
+}

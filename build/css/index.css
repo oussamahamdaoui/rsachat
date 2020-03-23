@@ -211,6 +211,73 @@
   border-radius: 0px 15px 15px 15px;
 }
 
+.log-in,
+.sign-up {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+.log-in h2,
+.sign-up h2 {
+  margin-bottom: 20px;
+}
+.log-in form,
+.sign-up form {
+  display: flex;
+  flex-direction: column;
+  padding: 1.5em;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.16), 0 2px 3px rgba(0, 0, 0, 0.23);
+  width: 50%;
+  border-radius: 30px;
+}
+.log-in form .input,
+.sign-up form .input {
+  background-color: #dcdde1;
+  margin-bottom: 0.5em;
+}
+.log-in form .input input,
+.sign-up form .input input {
+  padding-left: 1em;
+}
+.log-in form div,
+.sign-up form div {
+  margin-top: 1em;
+  font-size: 0.8em;
+}
+.log-in form div .to-sign-up,
+.sign-up form div .to-sign-up {
+  background-color: transparent;
+  text-decoration: underline;
+  border: none;
+  font-size: 1em;
+  cursor: pointer;
+}
+.log-in form .login-button,
+.sign-up form .login-button {
+  background-color: #0097e6;
+  border: none;
+  padding: 10px 10px;
+  color: #fff;
+  margin-top: 1em;
+  border-radius: 30px;
+  font-size: 1em;
+}
+
+.nav-bar {
+  position: fixed;
+  height: 70px;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  top: 0;
+  padding: 1em;
+}
+.nav-bar img {
+  height: 50px;
+}
+
 * {
   margin: 0;
   padding: 0;

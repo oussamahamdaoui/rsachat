@@ -4,10 +4,22 @@ const UserSchema = new Schema({
   username: {
     type: String,
     match: /^[a-z0-9](_(?!(\.|_))|\.(?!(_|\.))|[a-z0-9]){1,18}[a-z0-9]$/,
+    required: true,
+
+  },
+
+  userImage: {
+    type: String,
+  },
+
+  password: {
+    type: String,
+    required: true,
   },
 
   publicKey: {
     type: String,
+    required: true,
   },
 
   email: {

@@ -1,5 +1,5 @@
 const { html, $, $$ } = require('@forgjs/noframework');
-const { genCharArray } = require('../utlis');
+const { genCharArray } = require('../utils');
 const Input = require('./Input');
 
 const Contacts = () => {

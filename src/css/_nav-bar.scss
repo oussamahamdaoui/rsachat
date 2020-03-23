@@ -1,0 +1,13 @@
+.nav-bar {
+  position: fixed;
+  height: 70px;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  top: 0;
+  padding: 1em;
+
+  img {
+    height: 50px;
+  }
+}

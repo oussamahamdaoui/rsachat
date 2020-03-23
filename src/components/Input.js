@@ -18,6 +18,7 @@ const Input = ({
 
   inputEl.addEventListener('input', (e) => {
     onInput(e, inputEl.value);
+    DomElement.value = inputEl.value;
   });
 
   return DomElement;
