@@ -211,6 +211,20 @@
   border-radius: 0px 15px 15px 15px;
 }
 
+.slider {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  width: 100%;
+  padding: 3px;
+}
+.slider .slider-card {
+  width: 100%;
+  min-width: 100%;
+  height: 100%;
+  margin-right: 6px;
+}
+
 .log-in,
 .sign-up {
   display: flex;
@@ -222,6 +236,14 @@
 .log-in h2,
 .sign-up h2 {
   margin-bottom: 20px;
+}
+.log-in .slider,
+.sign-up .slider {
+  width: 50%;
+}
+.log-in .slider form,
+.sign-up .slider form {
+  width: 100%;
 }
 .log-in form,
 .sign-up form {

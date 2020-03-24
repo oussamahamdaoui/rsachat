@@ -10779,7 +10779,7 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 function _templateObject() {
-  var data = _taggedTemplateLiteral(["\n    <div class=\"sign-up\">\n      ", "\n      <h2>Sign up</h2>\n      <form>\n        ", "\n        ", "\n        ", "\n        ", "\n        <button class=\"login-button\">Sign up</button>\n      </form>\n    </div>\n  "]);
+  var data = _taggedTemplateLiteral(["\n    <div class=\"sign-up\">\n      ", "\n      <h2>Sign up</h2>\n      <div class=\"slider\">\n        <div class=\"slider-card\">\n          <form class=\"request-code\">\n            ", "\n            ", "\n            ", "\n            ", "\n            <button class=\"login-button\">Sign up</button>\n          </form>\n        </div>\n        <div class=\"slider-card\">\n          <form class=\"create-user\">\n            <h2>Enter validation code you got in your email</h2>\n            ", "\n            <button class=\"send-code\">Send</button>\n          </form>\n        </div>\n      </div>\n    </div>\n  "]);
 
   _templateObject = function _templateObject() {
     return data;
@@ -10799,6 +10799,10 @@ var Input = require('./components/Input');
 var NavBar = require('./components/NavBar');
 
 var api = require('./api');
+
+var c = require('./crypto');
+
+window.c = c;
 
 var SignUp = function SignUp() {
   var usernameElement = Input({
@@ -10825,8 +10829,15 @@ var SignUp = function SignUp() {
       placeholder: 'Confirm password'
     }
   });
-  var DomElement = html(_templateObject(), NavBar(), usernameElement, emailElement, passwordElement, confirmPasswordElement);
-  $('form', DomElement).addEventListener('submit',
+  var ValidationCodeElement = Input({
+    props: {
+      type: 'text',
+      placeholder: 'Validation code'
+    }
+  });
+  var DomElement = html(_templateObject(), NavBar(), usernameElement, emailElement, passwordElement, confirmPasswordElement, ValidationCodeElement);
+  var SliderElement = $('.slider', DomElement);
+  $('.request-code', DomElement).addEventListener('submit',
   /*#__PURE__*/
   function () {
     var _ref = _asyncToGenerator(
@@ -10837,20 +10848,15 @@ var SignUp = function SignUp() {
           switch (_context.prev = _context.next) {
             case 0:
               e.preventDefault();
-
-              if (!(confirmPasswordElement.value === passwordElement.value)) {
-                _context.next = 4;
-                break;
-              }
-
-              _context.next = 4;
-              return api.signUp({
-                username: usernameElement.value,
-                email: emailElement.value,
-                password: passwordElement.value
+              api.requestEmailCode({
+                email: emailElement.value
               });
 
-            case 4:
+              if (confirmPasswordElement.value === passwordElement.value) {
+                $('.slider-card', SliderElement).style.marginLeft = 'calc(-100% - 8px)';
+              }
+
+            case 3:
             case "end":
               return _context.stop();
           }
@@ -10862,12 +10868,40 @@ var SignUp = function SignUp() {
       return _ref.apply(this, arguments);
     };
   }());
+  $('.create-user', DomElement).addEventListener('submit',
+  /*#__PURE__*/
+  function () {
+    var _ref2 = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee2(e) {
+      var code, email, username, password;
+      return regeneratorRuntime.wrap(function _callee2$(_context2) {
+        while (1) {
+          switch (_context2.prev = _context2.next) {
+            case 0:
+              code = ValidationCodeElement.value;
+              email = emailElement.value;
+              username = usernameElement.value;
+              password = passwordElement.value;
+
+            case 4:
+            case "end":
+              return _context2.stop();
+          }
+        }
+      }, _callee2);
+    }));
+
+    return function (_x2) {
+      return _ref2.apply(this, arguments);
+    };
+  }());
   return DomElement;
 };
 
 module.exports = SignUp;
 
-},{"./api":338,"./components/Input":343,"./components/NavBar":344,"@forgjs/noframework":1}],338:[function(require,module,exports){
+},{"./api":338,"./components/Input":343,"./components/NavBar":344,"./crypto":347,"@forgjs/noframework":1}],338:[function(require,module,exports){
 "use strict";
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -10932,6 +10966,41 @@ function () {
       return signUp;
     }()
   }, {
+    key: "requestEmailCode",
+    value: function () {
+      var _requestEmailCode = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee2(_ref2) {
+        var email, res;
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                email = _ref2.email;
+                _context2.next = 3;
+                return Api.post('request-email-validation-code', {
+                  email: email
+                });
+
+              case 3:
+                res = _context2.sent;
+                return _context2.abrupt("return", res);
+
+              case 5:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
+      }));
+
+      function requestEmailCode(_x2) {
+        return _requestEmailCode.apply(this, arguments);
+      }
+
+      return requestEmailCode;
+    }()
+  }, {
     key: "init",
     value: function init() {
       if (this.token) {
@@ -10945,18 +11014,18 @@ function () {
     value: function () {
       var _post2 = _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee2() {
+      regeneratorRuntime.mark(function _callee3() {
         var res,
-            _args2 = arguments;
-        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+            _args3 = arguments;
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
           while (1) {
-            switch (_context2.prev = _context2.next) {
+            switch (_context3.prev = _context3.next) {
               case 0:
-                _context2.next = 2;
-                return _post("".concat(window.location.protocol).concat(window.location.host.replace('5500', '3000'), "/api/")).apply(void 0, _args2);
+                _context3.next = 2;
+                return _post("".concat(window.location.protocol).concat(window.location.host.replace('5500', '3000'), "/api/")).apply(void 0, _args3);
 
               case 2:
-                res = _context2.sent;
+                res = _context3.sent;
 
                 if (res.error) {
                   Alert({
@@ -10965,14 +11034,14 @@ function () {
                   });
                 }
 
-                return _context2.abrupt("return", res);
+                return _context3.abrupt("return", res);
 
               case 5:
               case "end":
-                return _context2.stop();
+                return _context3.stop();
             }
           }
-        }, _callee2);
+        }, _callee3);
       }));
 
       function post() {
@@ -10988,7 +11057,7 @@ function () {
 
 module.exports = new Api();
 
-},{"./GlobalEvents":334,"./components/Alert":339,"./utils":349}],339:[function(require,module,exports){
+},{"./GlobalEvents":334,"./components/Alert":339,"./utils":350}],339:[function(require,module,exports){
 "use strict";
 
 function _templateObject3() {
@@ -11173,7 +11242,7 @@ var Contacts = function Contacts() {
 
 module.exports = Contacts;
 
-},{"../utils":349,"./Input":343,"@forgjs/noframework":1}],342:[function(require,module,exports){
+},{"../utils":350,"./Input":343,"@forgjs/noframework":1}],342:[function(require,module,exports){
 "use strict";
 
 function _templateObject() {
@@ -11334,6 +11403,313 @@ module.exports = SideBarShortCuts;
 },{"./Icon":342,"@forgjs/noframework":1}],347:[function(require,module,exports){
 "use strict";
 
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+var getMessageEncoding = function getMessageEncoding(message) {
+  var enc = new TextEncoder();
+  return enc.encode(message);
+};
+
+function ab2str(buf) {
+  return String.fromCharCode.apply(null, new Uint16Array(buf));
+}
+
+function str2ab(str) {
+  var buf = new ArrayBuffer(str.length * 2); // 2 bytes for each char
+
+  var bufView = new Uint16Array(buf);
+
+  for (var i = 0, strLen = str.length; i < strLen; i += 1) {
+    bufView[i] = str.charCodeAt(i);
+  }
+
+  return buf;
+}
+
+var encryptRSA =
+/*#__PURE__*/
+function () {
+  var _ref = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee(message, key) {
+    var encoded, importedKey, cipherText;
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            encoded = getMessageEncoding(message);
+            _context.next = 3;
+            return window.crypto.subtle.importKey('jwk', key, {
+              name: 'RSA-OAEP',
+              hash: {
+                name: 'SHA-256'
+              }
+            }, true, ['encrypt']);
+
+          case 3:
+            importedKey = _context.sent;
+            _context.next = 6;
+            return window.crypto.subtle.encrypt({
+              name: 'RSA-OAEP',
+              hash: {
+                name: 'SHA-256'
+              }
+            }, importedKey, encoded);
+
+          case 6:
+            cipherText = _context.sent;
+            return _context.abrupt("return", ab2str(cipherText));
+
+          case 8:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee);
+  }));
+
+  return function encryptRSA(_x, _x2) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+var decryptRSA =
+/*#__PURE__*/
+function () {
+  var _ref2 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee2(cipherText, key) {
+    var importedKey, decrypted, dec;
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            _context2.next = 2;
+            return window.crypto.subtle.importKey('jwk', key, {
+              name: 'RSA-OAEP',
+              hash: {
+                name: 'SHA-256'
+              } // or SHA-512
+
+            }, true, ['decrypt']);
+
+          case 2:
+            importedKey = _context2.sent;
+            _context2.next = 5;
+            return window.crypto.subtle.decrypt({
+              name: 'RSA-OAEP',
+              hash: {
+                name: 'SHA-256'
+              } // or SHA-512
+
+            }, importedKey, str2ab(cipherText));
+
+          case 5:
+            decrypted = _context2.sent;
+            dec = new TextDecoder();
+            return _context2.abrupt("return", dec.decode(decrypted));
+
+          case 8:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2);
+  }));
+
+  return function decryptRSA(_x3, _x4) {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+var generateRsaKeys =
+/*#__PURE__*/
+function () {
+  var _ref3 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee3() {
+    var keyPair, formattedKeyPair;
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            _context3.next = 2;
+            return window.crypto.subtle.generateKey({
+              name: 'RSA-OAEP',
+              modulusLength: 4096,
+              publicExponent: new Uint8Array([1, 0, 1]),
+              hash: 'SHA-256'
+            }, true, ['encrypt', 'decrypt']);
+
+          case 2:
+            keyPair = _context3.sent;
+            _context3.next = 5;
+            return window.crypto.subtle.exportKey('jwk', keyPair.publicKey);
+
+          case 5:
+            _context3.t0 = _context3.sent;
+            _context3.next = 8;
+            return window.crypto.subtle.exportKey('jwk', keyPair.privateKey);
+
+          case 8:
+            _context3.t1 = _context3.sent;
+            formattedKeyPair = {
+              publicKey: _context3.t0,
+              privateKey: _context3.t1
+            };
+            return _context3.abrupt("return", formattedKeyPair);
+
+          case 11:
+          case "end":
+            return _context3.stop();
+        }
+      }
+    }, _callee3);
+  }));
+
+  return function generateRsaKeys() {
+    return _ref3.apply(this, arguments);
+  };
+}();
+
+var generateAESKey =
+/*#__PURE__*/
+function () {
+  var _ref4 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee4() {
+    var key, exportedKey;
+    return regeneratorRuntime.wrap(function _callee4$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            _context4.next = 2;
+            return window.crypto.subtle.generateKey({
+              name: 'AES-CTR',
+              length: 256
+            }, true, ['encrypt', 'decrypt']);
+
+          case 2:
+            key = _context4.sent;
+            _context4.next = 5;
+            return window.crypto.subtle.exportKey('jwk', key);
+
+          case 5:
+            exportedKey = _context4.sent;
+            return _context4.abrupt("return", exportedKey);
+
+          case 7:
+          case "end":
+            return _context4.stop();
+        }
+      }
+    }, _callee4);
+  }));
+
+  return function generateAESKey() {
+    return _ref4.apply(this, arguments);
+  };
+}();
+
+var encryptAES =
+/*#__PURE__*/
+function () {
+  var _ref5 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee5(message, key) {
+    var encodedMessage, counter, importedKey, cipherText;
+    return regeneratorRuntime.wrap(function _callee5$(_context5) {
+      while (1) {
+        switch (_context5.prev = _context5.next) {
+          case 0:
+            encodedMessage = str2ab(message);
+            counter = window.crypto.getRandomValues(new Uint8Array(16));
+            _context5.next = 4;
+            return window.crypto.subtle.importKey('jwk', key, 'AES-CTR', true, ['encrypt', 'decrypt']);
+
+          case 4:
+            importedKey = _context5.sent;
+            _context5.next = 7;
+            return window.crypto.subtle.encrypt({
+              name: 'AES-CTR',
+              counter: counter,
+              length: 64
+            }, importedKey, encodedMessage);
+
+          case 7:
+            cipherText = _context5.sent;
+            return _context5.abrupt("return", {
+              counter: counter,
+              message: ab2str(cipherText)
+            });
+
+          case 9:
+          case "end":
+            return _context5.stop();
+        }
+      }
+    }, _callee5);
+  }));
+
+  return function encryptAES(_x5, _x6) {
+    return _ref5.apply(this, arguments);
+  };
+}();
+
+var decryptAES =
+/*#__PURE__*/
+function () {
+  var _ref6 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee6(message, key) {
+    var importedKey, decryptedMessage;
+    return regeneratorRuntime.wrap(function _callee6$(_context6) {
+      while (1) {
+        switch (_context6.prev = _context6.next) {
+          case 0:
+            _context6.next = 2;
+            return window.crypto.subtle.importKey('jwk', key, 'AES-CTR', true, ['encrypt', 'decrypt']);
+
+          case 2:
+            importedKey = _context6.sent;
+            _context6.next = 5;
+            return window.crypto.subtle.decrypt({
+              name: 'AES-CTR',
+              counter: message.counter,
+              length: 64
+            }, importedKey, str2ab(message.message));
+
+          case 5:
+            decryptedMessage = _context6.sent;
+            return _context6.abrupt("return", ab2str(decryptedMessage));
+
+          case 7:
+          case "end":
+            return _context6.stop();
+        }
+      }
+    }, _callee6);
+  }));
+
+  return function decryptAES(_x7, _x8) {
+    return _ref6.apply(this, arguments);
+  };
+}();
+
+module.exports = {
+  generateRsaKeys: generateRsaKeys,
+  encryptRSA: encryptRSA,
+  decryptRSA: decryptRSA,
+  generateAESKey: generateAESKey,
+  encryptAES: encryptAES,
+  decryptAES: decryptAES
+};
+
+},{}],348:[function(require,module,exports){
+"use strict";
+
 function _templateObject() {
   var data = _taggedTemplateLiteral(["<div class=\"app\">\n    ", "\n  </div>"]);
 
@@ -11365,7 +11741,7 @@ var App = function App() {
 document.body.appendChild(App());
 api.init();
 
-},{"./api":338,"./rooter":348,"@forgjs/noframework":1,"babel-polyfill":2}],348:[function(require,module,exports){
+},{"./api":338,"./rooter":349,"@forgjs/noframework":1,"babel-polyfill":2}],349:[function(require,module,exports){
 "use strict";
 
 function _templateObject() {
@@ -11416,7 +11792,7 @@ module.exports = {
   ROUTES: ROUTES
 };
 
-},{"./GlobalEvents":334,"./LogIn":335,"./LoggedIn":336,"./SignUp":337,"@forgjs/noframework":1}],349:[function(require,module,exports){
+},{"./GlobalEvents":334,"./LogIn":335,"./LoggedIn":336,"./SignUp":337,"@forgjs/noframework":1}],350:[function(require,module,exports){
 "use strict";
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -11549,4 +11925,4 @@ module.exports = {
   post: post
 };
 
-},{}]},{},[347]);
+},{}]},{},[348]);

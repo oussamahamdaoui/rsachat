@@ -35,6 +35,14 @@ class Api {
     });
   }
 
+  async requestEmailCode({ email }) {
+    const res = await Api.post('request-email-validation-code', {
+      email,
+    });
+
+    return res;
+  }
+
   init() {
     if (this.token) {
       this.data = parseJwt(this.token);

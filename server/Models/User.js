@@ -17,6 +17,11 @@ const UserSchema = new Schema({
     required: true,
   },
 
+  privetKey: {
+    type: String,
+    required: true,
+  },
+
   publicKey: {
     type: String,
     required: true,

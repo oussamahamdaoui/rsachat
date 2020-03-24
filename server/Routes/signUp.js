@@ -1,5 +1,6 @@
 const { SUCCESS, ERROR, hashPassword } = require('../utils');
 const User = require('../Models/User');
+const EmailValidationRequestCode = require('../Models/EmailValidationRequestCode');
 
 module.exports = async (req, res) => {
   try {
@@ -7,7 +8,9 @@ module.exports = async (req, res) => {
       email,
       username,
       password,
+      code,
     } = req.body;
+
 
     const user = await User.findOne({
       $or: [{
@@ -16,6 +19,18 @@ module.exports = async (req, res) => {
         username,
       }],
     });
+
+    const emailValidationRequest = await EmailValidationRequestCode.findOne({
+      email,
+      code,
+    });
+
+    if (!emailValidationRequest) {
+      return res.json({
+        ...ERROR,
+        message: 'please enter a valid email',
+      });
+    }
 
     if (user) {
       if (user.email === email) {

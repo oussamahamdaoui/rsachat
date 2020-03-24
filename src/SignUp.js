@@ -2,6 +2,9 @@ const { html, $ } = require('@forgjs/noframework');
 const Input = require('./components/Input');
 const NavBar = require('./components/NavBar');
 const api = require('./api');
+const c = require('./crypto');
+
+window.c = c;
 
 const SignUp = () => {
   const usernameElement = Input({ props: { type: 'text', placeholder: 'Username' } });
@@ -11,32 +14,53 @@ const SignUp = () => {
     props: { type: 'password', placeholder: 'Confirm password' },
   });
 
+  const ValidationCodeElement = Input({ props: { type: 'text', placeholder: 'Validation code' } });
+
 
   const DomElement = html`
     <div class="sign-up">
       ${NavBar()}
       <h2>Sign up</h2>
-      <form>
-        ${usernameElement}
-        ${emailElement}
-        ${passwordElement}
-        ${confirmPasswordElement}
-        <button class="login-button">Sign up</button>
-      </form>
+      <div class="slider">
+        <div class="slider-card">
+          <form class="request-code">
+            ${usernameElement}
+            ${emailElement}
+            ${passwordElement}
+            ${confirmPasswordElement}
+            <button class="login-button">Sign up</button>
+          </form>
+        </div>
+        <div class="slider-card">
+          <form class="create-user">
+            <h2>Enter validation code you got in your email</h2>
+            ${ValidationCodeElement}
+            <button class="send-code">Send</button>
+          </form>
+        </div>
+      </div>
     </div>
   `;
 
-  $('form', DomElement).addEventListener('submit', async (e) => {
+  const SliderElement = $('.slider', DomElement);
+
+  $('.request-code', DomElement).addEventListener('submit', async (e) => {
     e.preventDefault();
+    api.requestEmailCode({
+      email: emailElement.value,
+    });
+
     if (confirmPasswordElement.value === passwordElement.value) {
-      await api.signUp({
-        username: usernameElement.value,
-        email: emailElement.value,
-        password: passwordElement.value,
-      });
+      $('.slider-card', SliderElement).style.marginLeft = 'calc(-100% - 8px)';
     }
   });
 
+  $('.create-user', DomElement).addEventListener('submit', async (e) => {
+    const code = ValidationCodeElement.value;
+    const email = emailElement.value;
+    const username = usernameElement.value;
+    const password = passwordElement.value;
+  });
   return DomElement;
 };
 
