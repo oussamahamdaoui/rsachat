@@ -11412,35 +11412,181 @@ var getMessageEncoding = function getMessageEncoding(message) {
   return enc.encode(message);
 };
 
-function ab2str(buf) {
-  return String.fromCharCode.apply(null, new Uint16Array(buf));
-}
+function ab2str(buffer) {
+  var binary = '';
+  var bytes = new Uint8Array(buffer);
+  var len = bytes.byteLength;
 
-function str2ab(str) {
-  var buf = new ArrayBuffer(str.length * 2); // 2 bytes for each char
-
-  var bufView = new Uint16Array(buf);
-
-  for (var i = 0, strLen = str.length; i < strLen; i += 1) {
-    bufView[i] = str.charCodeAt(i);
+  for (var i = 0; i < len; i += 1) {
+    binary += String.fromCharCode(bytes[i]);
   }
 
-  return buf;
+  return window.btoa(binary);
 }
 
-var encryptRSA =
+function str2ab(base64) {
+  var binaryString = window.atob(base64);
+  var len = binaryString.length;
+  var bytes = new Uint8Array(len);
+
+  for (var i = 0; i < len; i += 1) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+
+  return bytes.buffer;
+}
+
+var wrapRSAKey =
 /*#__PURE__*/
 function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee(message, key) {
-    var encoded, importedKey, cipherText;
+  regeneratorRuntime.mark(function _callee(keyToWrap, password) {
+    var importedKey, keyMaterial, salt, wrappingKey, iv, wrappedKey;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
+            _context.next = 2;
+            return window.crypto.subtle.importKey('jwk', keyToWrap, {
+              name: 'RSA-OAEP',
+              hash: {
+                name: 'SHA-256'
+              }
+            }, true, ['decrypt']);
+
+          case 2:
+            importedKey = _context.sent;
+            _context.next = 5;
+            return window.crypto.subtle.importKey('raw', getMessageEncoding(password), {
+              name: 'PBKDF2'
+            }, false, ['deriveBits', 'deriveKey']);
+
+          case 5:
+            keyMaterial = _context.sent;
+            _context.next = 8;
+            return window.crypto.getRandomValues(new Uint8Array(16));
+
+          case 8:
+            salt = _context.sent;
+            _context.next = 11;
+            return window.crypto.subtle.deriveKey({
+              name: 'PBKDF2',
+              salt: salt,
+              iterations: 100000,
+              hash: 'SHA-256'
+            }, keyMaterial, {
+              name: 'AES-GCM',
+              length: 256
+            }, true, ['wrapKey', 'unwrapKey']);
+
+          case 11:
+            wrappingKey = _context.sent;
+            _context.next = 14;
+            return window.crypto.getRandomValues(new Uint8Array(12));
+
+          case 14:
+            iv = _context.sent;
+            _context.next = 17;
+            return window.crypto.subtle.wrapKey('jwk', importedKey, wrappingKey, {
+              name: 'AES-GCM',
+              iv: iv
+            });
+
+          case 17:
+            wrappedKey = _context.sent;
+            return _context.abrupt("return", {
+              key: ab2str(wrappedKey),
+              iv: iv.toString(),
+              salt: salt.toString()
+            });
+
+          case 19:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee);
+  }));
+
+  return function wrapRSAKey(_x, _x2) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+var unwrapRSAKey =
+/*#__PURE__*/
+function () {
+  var _ref3 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee2(_ref2, password) {
+    var key, salt, iv, keyMaterial, unwrappingKey, unwrappedKey;
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            key = _ref2.key, salt = _ref2.salt, iv = _ref2.iv;
+            _context2.next = 3;
+            return window.crypto.subtle.importKey('raw', getMessageEncoding(password), {
+              name: 'PBKDF2'
+            }, false, ['deriveBits', 'deriveKey']);
+
+          case 3:
+            keyMaterial = _context2.sent;
+            _context2.next = 6;
+            return window.crypto.subtle.deriveKey({
+              name: 'PBKDF2',
+              salt: Uint8Array.from(salt.split(',')),
+              iterations: 100000,
+              hash: 'SHA-256'
+            }, keyMaterial, {
+              name: 'AES-GCM',
+              length: 256
+            }, true, ['wrapKey', 'unwrapKey']);
+
+          case 6:
+            unwrappingKey = _context2.sent;
+            _context2.next = 9;
+            return window.crypto.subtle.unwrapKey('jwk', str2ab(key), unwrappingKey, {
+              name: 'AES-GCM',
+              iv: Uint8Array.from(iv.split(','))
+            }, {
+              name: 'RSA-OAEP',
+              hash: {
+                name: 'SHA-256'
+              }
+            }, true, ['decrypt']);
+
+          case 9:
+            unwrappedKey = _context2.sent;
+            return _context2.abrupt("return", window.crypto.subtle.exportKey('jwk', unwrappedKey));
+
+          case 11:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2);
+  }));
+
+  return function unwrapRSAKey(_x3, _x4) {
+    return _ref3.apply(this, arguments);
+  };
+}();
+
+var encryptRSA =
+/*#__PURE__*/
+function () {
+  var _ref4 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee3(message, key) {
+    var encoded, importedKey, cipherText;
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
             encoded = getMessageEncoding(message);
-            _context.next = 3;
+            _context3.next = 3;
             return window.crypto.subtle.importKey('jwk', key, {
               name: 'RSA-OAEP',
               hash: {
@@ -11449,8 +11595,8 @@ function () {
             }, true, ['encrypt']);
 
           case 3:
-            importedKey = _context.sent;
-            _context.next = 6;
+            importedKey = _context3.sent;
+            _context3.next = 6;
             return window.crypto.subtle.encrypt({
               name: 'RSA-OAEP',
               hash: {
@@ -11459,34 +11605,34 @@ function () {
             }, importedKey, encoded);
 
           case 6:
-            cipherText = _context.sent;
-            return _context.abrupt("return", ab2str(cipherText));
+            cipherText = _context3.sent;
+            return _context3.abrupt("return", ab2str(cipherText));
 
           case 8:
           case "end":
-            return _context.stop();
+            return _context3.stop();
         }
       }
-    }, _callee);
+    }, _callee3);
   }));
 
-  return function encryptRSA(_x, _x2) {
-    return _ref.apply(this, arguments);
+  return function encryptRSA(_x5, _x6) {
+    return _ref4.apply(this, arguments);
   };
 }();
 
 var decryptRSA =
 /*#__PURE__*/
 function () {
-  var _ref2 = _asyncToGenerator(
+  var _ref5 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee2(cipherText, key) {
+  regeneratorRuntime.mark(function _callee4(cipherText, key) {
     var importedKey, decrypted, dec;
-    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+    return regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
-        switch (_context2.prev = _context2.next) {
+        switch (_context4.prev = _context4.next) {
           case 0:
-            _context2.next = 2;
+            _context4.next = 2;
             return window.crypto.subtle.importKey('jwk', key, {
               name: 'RSA-OAEP',
               hash: {
@@ -11496,8 +11642,8 @@ function () {
             }, true, ['decrypt']);
 
           case 2:
-            importedKey = _context2.sent;
-            _context2.next = 5;
+            importedKey = _context4.sent;
+            _context4.next = 5;
             return window.crypto.subtle.decrypt({
               name: 'RSA-OAEP',
               hash: {
@@ -11507,35 +11653,35 @@ function () {
             }, importedKey, str2ab(cipherText));
 
           case 5:
-            decrypted = _context2.sent;
+            decrypted = _context4.sent;
             dec = new TextDecoder();
-            return _context2.abrupt("return", dec.decode(decrypted));
+            return _context4.abrupt("return", dec.decode(decrypted));
 
           case 8:
           case "end":
-            return _context2.stop();
+            return _context4.stop();
         }
       }
-    }, _callee2);
+    }, _callee4);
   }));
 
-  return function decryptRSA(_x3, _x4) {
-    return _ref2.apply(this, arguments);
+  return function decryptRSA(_x7, _x8) {
+    return _ref5.apply(this, arguments);
   };
 }();
 
 var generateRsaKeys =
 /*#__PURE__*/
 function () {
-  var _ref3 = _asyncToGenerator(
+  var _ref6 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee3() {
+  regeneratorRuntime.mark(function _callee5() {
     var keyPair, formattedKeyPair;
-    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+    return regeneratorRuntime.wrap(function _callee5$(_context5) {
       while (1) {
-        switch (_context3.prev = _context3.next) {
+        switch (_context5.prev = _context5.next) {
           case 0:
-            _context3.next = 2;
+            _context5.next = 2;
             return window.crypto.subtle.generateKey({
               name: 'RSA-OAEP',
               modulusLength: 4096,
@@ -11544,108 +11690,24 @@ function () {
             }, true, ['encrypt', 'decrypt']);
 
           case 2:
-            keyPair = _context3.sent;
-            _context3.next = 5;
+            keyPair = _context5.sent;
+            _context5.next = 5;
             return window.crypto.subtle.exportKey('jwk', keyPair.publicKey);
 
           case 5:
-            _context3.t0 = _context3.sent;
-            _context3.next = 8;
+            _context5.t0 = _context5.sent;
+            _context5.next = 8;
             return window.crypto.subtle.exportKey('jwk', keyPair.privateKey);
 
           case 8:
-            _context3.t1 = _context3.sent;
+            _context5.t1 = _context5.sent;
             formattedKeyPair = {
-              publicKey: _context3.t0,
-              privateKey: _context3.t1
+              publicKey: _context5.t0,
+              privateKey: _context5.t1
             };
-            return _context3.abrupt("return", formattedKeyPair);
+            return _context5.abrupt("return", formattedKeyPair);
 
           case 11:
-          case "end":
-            return _context3.stop();
-        }
-      }
-    }, _callee3);
-  }));
-
-  return function generateRsaKeys() {
-    return _ref3.apply(this, arguments);
-  };
-}();
-
-var generateAESKey =
-/*#__PURE__*/
-function () {
-  var _ref4 = _asyncToGenerator(
-  /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee4() {
-    var key, exportedKey;
-    return regeneratorRuntime.wrap(function _callee4$(_context4) {
-      while (1) {
-        switch (_context4.prev = _context4.next) {
-          case 0:
-            _context4.next = 2;
-            return window.crypto.subtle.generateKey({
-              name: 'AES-CTR',
-              length: 256
-            }, true, ['encrypt', 'decrypt']);
-
-          case 2:
-            key = _context4.sent;
-            _context4.next = 5;
-            return window.crypto.subtle.exportKey('jwk', key);
-
-          case 5:
-            exportedKey = _context4.sent;
-            return _context4.abrupt("return", exportedKey);
-
-          case 7:
-          case "end":
-            return _context4.stop();
-        }
-      }
-    }, _callee4);
-  }));
-
-  return function generateAESKey() {
-    return _ref4.apply(this, arguments);
-  };
-}();
-
-var encryptAES =
-/*#__PURE__*/
-function () {
-  var _ref5 = _asyncToGenerator(
-  /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee5(message, key) {
-    var encodedMessage, counter, importedKey, cipherText;
-    return regeneratorRuntime.wrap(function _callee5$(_context5) {
-      while (1) {
-        switch (_context5.prev = _context5.next) {
-          case 0:
-            encodedMessage = str2ab(message);
-            counter = window.crypto.getRandomValues(new Uint8Array(16));
-            _context5.next = 4;
-            return window.crypto.subtle.importKey('jwk', key, 'AES-CTR', true, ['encrypt', 'decrypt']);
-
-          case 4:
-            importedKey = _context5.sent;
-            _context5.next = 7;
-            return window.crypto.subtle.encrypt({
-              name: 'AES-CTR',
-              counter: counter,
-              length: 64
-            }, importedKey, encodedMessage);
-
-          case 7:
-            cipherText = _context5.sent;
-            return _context5.abrupt("return", {
-              counter: counter,
-              message: ab2str(cipherText)
-            });
-
-          case 9:
           case "end":
             return _context5.stop();
         }
@@ -11653,37 +11715,36 @@ function () {
     }, _callee5);
   }));
 
-  return function encryptAES(_x5, _x6) {
-    return _ref5.apply(this, arguments);
+  return function generateRsaKeys() {
+    return _ref6.apply(this, arguments);
   };
 }();
 
-var decryptAES =
+var generateAESKey =
 /*#__PURE__*/
 function () {
-  var _ref6 = _asyncToGenerator(
+  var _ref7 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee6(message, key) {
-    var importedKey, decryptedMessage;
+  regeneratorRuntime.mark(function _callee6() {
+    var key, exportedKey;
     return regeneratorRuntime.wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
           case 0:
             _context6.next = 2;
-            return window.crypto.subtle.importKey('jwk', key, 'AES-CTR', true, ['encrypt', 'decrypt']);
+            return window.crypto.subtle.generateKey({
+              name: 'AES-CTR',
+              length: 256
+            }, true, ['encrypt', 'decrypt']);
 
           case 2:
-            importedKey = _context6.sent;
+            key = _context6.sent;
             _context6.next = 5;
-            return window.crypto.subtle.decrypt({
-              name: 'AES-CTR',
-              counter: message.counter,
-              length: 64
-            }, importedKey, str2ab(message.message));
+            return window.crypto.subtle.exportKey('jwk', key);
 
           case 5:
-            decryptedMessage = _context6.sent;
-            return _context6.abrupt("return", ab2str(decryptedMessage));
+            exportedKey = _context6.sent;
+            return _context6.abrupt("return", exportedKey);
 
           case 7:
           case "end":
@@ -11693,8 +11754,359 @@ function () {
     }, _callee6);
   }));
 
-  return function decryptAES(_x7, _x8) {
-    return _ref6.apply(this, arguments);
+  return function generateAESKey() {
+    return _ref7.apply(this, arguments);
+  };
+}();
+
+var encryptAES =
+/*#__PURE__*/
+function () {
+  var _ref8 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee7(message, key) {
+    var encodedMessage, counter, importedKey, cipherText;
+    return regeneratorRuntime.wrap(function _callee7$(_context7) {
+      while (1) {
+        switch (_context7.prev = _context7.next) {
+          case 0:
+            encodedMessage = getMessageEncoding(message);
+            counter = window.crypto.getRandomValues(new Uint8Array(16));
+            _context7.next = 4;
+            return window.crypto.subtle.importKey('jwk', key, 'AES-CTR', true, ['encrypt', 'decrypt']);
+
+          case 4:
+            importedKey = _context7.sent;
+            _context7.next = 7;
+            return window.crypto.subtle.encrypt({
+              name: 'AES-CTR',
+              counter: counter,
+              length: 64
+            }, importedKey, encodedMessage);
+
+          case 7:
+            cipherText = _context7.sent;
+            return _context7.abrupt("return", {
+              counter: counter,
+              message: ab2str(cipherText)
+            });
+
+          case 9:
+          case "end":
+            return _context7.stop();
+        }
+      }
+    }, _callee7);
+  }));
+
+  return function encryptAES(_x9, _x10) {
+    return _ref8.apply(this, arguments);
+  };
+}();
+
+var decryptAES =
+/*#__PURE__*/
+function () {
+  var _ref9 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee8(message, key) {
+    var importedKey, decryptedMessage;
+    return regeneratorRuntime.wrap(function _callee8$(_context8) {
+      while (1) {
+        switch (_context8.prev = _context8.next) {
+          case 0:
+            _context8.next = 2;
+            return window.crypto.subtle.importKey('jwk', key, 'AES-CTR', true, ['encrypt', 'decrypt']);
+
+          case 2:
+            importedKey = _context8.sent;
+            _context8.next = 5;
+            return window.crypto.subtle.decrypt({
+              name: 'AES-CTR',
+              counter: message.counter,
+              length: 64
+            }, importedKey, str2ab(message.message));
+
+          case 5:
+            decryptedMessage = _context8.sent;
+            return _context8.abrupt("return", new TextDecoder().decode(decryptedMessage));
+
+          case 7:
+          case "end":
+            return _context8.stop();
+        }
+      }
+    }, _callee8);
+  }));
+
+  return function decryptAES(_x11, _x12) {
+    return _ref9.apply(this, arguments);
+  };
+}();
+
+var generateSignKeys =
+/*#__PURE__*/
+function () {
+  var _ref10 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee9() {
+    var key;
+    return regeneratorRuntime.wrap(function _callee9$(_context9) {
+      while (1) {
+        switch (_context9.prev = _context9.next) {
+          case 0:
+            _context9.next = 2;
+            return window.crypto.subtle.generateKey({
+              name: 'ECDSA',
+              namedCurve: 'P-384'
+            }, true, ['sign', 'verify']);
+
+          case 2:
+            key = _context9.sent;
+            _context9.next = 5;
+            return window.crypto.subtle.exportKey('jwk', key.publicKey);
+
+          case 5:
+            _context9.t0 = _context9.sent;
+            _context9.next = 8;
+            return window.crypto.subtle.exportKey('jwk', key.privateKey);
+
+          case 8:
+            _context9.t1 = _context9.sent;
+            return _context9.abrupt("return", {
+              publicKey: _context9.t0,
+              privateKey: _context9.t1
+            });
+
+          case 10:
+          case "end":
+            return _context9.stop();
+        }
+      }
+    }, _callee9);
+  }));
+
+  return function generateSignKeys() {
+    return _ref10.apply(this, arguments);
+  };
+}();
+
+var generateSignature =
+/*#__PURE__*/
+function () {
+  var _ref11 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee10(message, privateKey) {
+    var encoded, importedKey, signature;
+    return regeneratorRuntime.wrap(function _callee10$(_context10) {
+      while (1) {
+        switch (_context10.prev = _context10.next) {
+          case 0:
+            encoded = getMessageEncoding(message);
+            _context10.next = 3;
+            return window.crypto.subtle.importKey('jwk', privateKey, {
+              name: 'ECDSA',
+              namedCurve: 'P-384'
+            }, true, ['sign']);
+
+          case 3:
+            importedKey = _context10.sent;
+            _context10.next = 6;
+            return window.crypto.subtle.sign({
+              name: 'ECDSA',
+              hash: {
+                name: 'SHA-384'
+              }
+            }, importedKey, encoded);
+
+          case 6:
+            signature = _context10.sent;
+            return _context10.abrupt("return", ab2str(signature));
+
+          case 8:
+          case "end":
+            return _context10.stop();
+        }
+      }
+    }, _callee10);
+  }));
+
+  return function generateSignature(_x13, _x14) {
+    return _ref11.apply(this, arguments);
+  };
+}();
+
+var verifySignature =
+/*#__PURE__*/
+function () {
+  var _ref12 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee11(message, signature, publicKey) {
+    var encoded, importedKey;
+    return regeneratorRuntime.wrap(function _callee11$(_context11) {
+      while (1) {
+        switch (_context11.prev = _context11.next) {
+          case 0:
+            encoded = getMessageEncoding(message);
+            _context11.next = 3;
+            return window.crypto.subtle.importKey('jwk', publicKey, {
+              name: 'ECDSA',
+              namedCurve: 'P-384'
+            }, true, ['verify']);
+
+          case 3:
+            importedKey = _context11.sent;
+            return _context11.abrupt("return", window.crypto.subtle.verify({
+              name: 'ECDSA',
+              hash: {
+                name: 'SHA-384'
+              }
+            }, importedKey, str2ab(signature), encoded));
+
+          case 5:
+          case "end":
+            return _context11.stop();
+        }
+      }
+    }, _callee11);
+  }));
+
+  return function verifySignature(_x15, _x16, _x17) {
+    return _ref12.apply(this, arguments);
+  };
+}();
+
+var wrapSignKey =
+/*#__PURE__*/
+function () {
+  var _ref13 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee12(keyToWrap, password) {
+    var importedKey, keyMaterial, salt, wrappingKey, iv, wrappedKey;
+    return regeneratorRuntime.wrap(function _callee12$(_context12) {
+      while (1) {
+        switch (_context12.prev = _context12.next) {
+          case 0:
+            _context12.next = 2;
+            return window.crypto.subtle.importKey('jwk', keyToWrap, {
+              name: 'ECDSA',
+              namedCurve: 'P-384'
+            }, true, ['sign']);
+
+          case 2:
+            importedKey = _context12.sent;
+            _context12.next = 5;
+            return window.crypto.subtle.importKey('raw', getMessageEncoding(password), {
+              name: 'PBKDF2'
+            }, false, ['deriveBits', 'deriveKey']);
+
+          case 5:
+            keyMaterial = _context12.sent;
+            _context12.next = 8;
+            return window.crypto.getRandomValues(new Uint8Array(16));
+
+          case 8:
+            salt = _context12.sent;
+            _context12.next = 11;
+            return window.crypto.subtle.deriveKey({
+              name: 'PBKDF2',
+              salt: salt,
+              iterations: 100000,
+              hash: 'SHA-256'
+            }, keyMaterial, {
+              name: 'AES-GCM',
+              length: 256
+            }, true, ['wrapKey', 'unwrapKey']);
+
+          case 11:
+            wrappingKey = _context12.sent;
+            _context12.next = 14;
+            return window.crypto.getRandomValues(new Uint8Array(12));
+
+          case 14:
+            iv = _context12.sent;
+            _context12.next = 17;
+            return window.crypto.subtle.wrapKey('jwk', importedKey, wrappingKey, {
+              name: 'AES-GCM',
+              iv: iv
+            });
+
+          case 17:
+            wrappedKey = _context12.sent;
+            return _context12.abrupt("return", {
+              key: ab2str(wrappedKey),
+              iv: iv.toString(),
+              salt: salt.toString()
+            });
+
+          case 19:
+          case "end":
+            return _context12.stop();
+        }
+      }
+    }, _callee12);
+  }));
+
+  return function wrapSignKey(_x18, _x19) {
+    return _ref13.apply(this, arguments);
+  };
+}();
+
+var unwrapSignKey =
+/*#__PURE__*/
+function () {
+  var _ref15 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee13(_ref14, password) {
+    var key, salt, iv, keyMaterial, unwrappingKey, unwrappedKey;
+    return regeneratorRuntime.wrap(function _callee13$(_context13) {
+      while (1) {
+        switch (_context13.prev = _context13.next) {
+          case 0:
+            key = _ref14.key, salt = _ref14.salt, iv = _ref14.iv;
+            _context13.next = 3;
+            return window.crypto.subtle.importKey('raw', getMessageEncoding(password), {
+              name: 'PBKDF2'
+            }, false, ['deriveBits', 'deriveKey']);
+
+          case 3:
+            keyMaterial = _context13.sent;
+            _context13.next = 6;
+            return window.crypto.subtle.deriveKey({
+              name: 'PBKDF2',
+              salt: Uint8Array.from(salt.split(',')),
+              iterations: 100000,
+              hash: 'SHA-256'
+            }, keyMaterial, {
+              name: 'AES-GCM',
+              length: 256
+            }, true, ['wrapKey', 'unwrapKey']);
+
+          case 6:
+            unwrappingKey = _context13.sent;
+            _context13.next = 9;
+            return window.crypto.subtle.unwrapKey('jwk', str2ab(key), unwrappingKey, {
+              name: 'AES-GCM',
+              iv: Uint8Array.from(iv.split(','))
+            }, {
+              name: 'ECDSA',
+              namedCurve: 'P-384'
+            }, true, ['sign']);
+
+          case 9:
+            unwrappedKey = _context13.sent;
+            return _context13.abrupt("return", window.crypto.subtle.exportKey('jwk', unwrappedKey));
+
+          case 11:
+          case "end":
+            return _context13.stop();
+        }
+      }
+    }, _callee13);
+  }));
+
+  return function unwrapSignKey(_x20, _x21) {
+    return _ref15.apply(this, arguments);
   };
 }();
 
@@ -11704,7 +12116,14 @@ module.exports = {
   decryptRSA: decryptRSA,
   generateAESKey: generateAESKey,
   encryptAES: encryptAES,
-  decryptAES: decryptAES
+  decryptAES: decryptAES,
+  wrapRSAKey: wrapRSAKey,
+  unwrapRSAKey: unwrapRSAKey,
+  generateSignKeys: generateSignKeys,
+  generateSignature: generateSignature,
+  verifySignature: verifySignature,
+  wrapSignKey: wrapSignKey,
+  unwrapSignKey: unwrapSignKey
 };
 
 },{}],348:[function(require,module,exports){

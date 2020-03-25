@@ -5,18 +5,113 @@ const getMessageEncoding = (message) => {
 };
 
 
-function ab2str(buf) {
-  return String.fromCharCode.apply(null, new Uint16Array(buf));
+function ab2str(buffer) {
+  let binary = '';
+  const bytes = new Uint8Array(buffer);
+  const len = bytes.byteLength;
+  for (let i = 0; i < len; i += 1) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return window.btoa(binary);
 }
 
-function str2ab(str) {
-  const buf = new ArrayBuffer(str.length * 2); // 2 bytes for each char
-  const bufView = new Uint16Array(buf);
-  for (let i = 0, strLen = str.length; i < strLen; i += 1) {
-    bufView[i] = str.charCodeAt(i);
+function str2ab(base64) {
+  const binaryString = window.atob(base64);
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i += 1) {
+    bytes[i] = binaryString.charCodeAt(i);
   }
-  return buf;
+  return bytes.buffer;
 }
+
+const wrapRSAKey = async (keyToWrap, password) => {
+  const importedKey = await window.crypto.subtle.importKey(
+    'jwk',
+    keyToWrap,
+    {
+      name: 'RSA-OAEP',
+      hash: { name: 'SHA-256' },
+    },
+    true,
+    ['decrypt'],
+  );
+  const keyMaterial = await window.crypto.subtle.importKey(
+    'raw',
+    getMessageEncoding(password),
+    { name: 'PBKDF2' },
+    false,
+    ['deriveBits', 'deriveKey'],
+  );
+  const salt = await window.crypto.getRandomValues(new Uint8Array(16));
+  const wrappingKey = await window.crypto.subtle.deriveKey(
+    {
+      name: 'PBKDF2',
+      salt,
+      iterations: 100000,
+      hash: 'SHA-256',
+    },
+    keyMaterial,
+    { name: 'AES-GCM', length: 256 },
+    true,
+    ['wrapKey', 'unwrapKey'],
+  );
+  const iv = await window.crypto.getRandomValues(new Uint8Array(12));
+  const wrappedKey = await window.crypto.subtle.wrapKey(
+    'jwk',
+    importedKey,
+    wrappingKey,
+    {
+      name: 'AES-GCM',
+      iv,
+    },
+  );
+  return {
+    key: ab2str(wrappedKey),
+    iv: iv.toString(),
+    salt: salt.toString(),
+  };
+};
+
+const unwrapRSAKey = async ({ key, salt, iv }, password) => {
+  const keyMaterial = await window.crypto.subtle.importKey(
+    'raw',
+    getMessageEncoding(password),
+    { name: 'PBKDF2' },
+    false,
+    ['deriveBits', 'deriveKey'],
+  );
+
+  const unwrappingKey = await window.crypto.subtle.deriveKey(
+    {
+      name: 'PBKDF2',
+      salt: Uint8Array.from(salt.split(',')),
+      iterations: 100000,
+      hash: 'SHA-256',
+    },
+    keyMaterial,
+    { name: 'AES-GCM', length: 256 },
+    true,
+    ['wrapKey', 'unwrapKey'],
+  );
+  const unwrappedKey = await window.crypto.subtle.unwrapKey(
+    'jwk',
+    str2ab(key),
+    unwrappingKey,
+    {
+      name: 'AES-GCM',
+      iv: Uint8Array.from(iv.split(',')),
+    },
+    {
+      name: 'RSA-OAEP',
+      hash: { name: 'SHA-256' },
+    },
+    true,
+    ['decrypt'],
+  );
+
+  return window.crypto.subtle.exportKey('jwk', unwrappedKey);
+};
 
 
 const encryptRSA = async (message, key) => {
@@ -105,7 +200,7 @@ const generateAESKey = async () => {
 
 
 const encryptAES = async (message, key) => {
-  const encodedMessage = str2ab(message);
+  const encodedMessage = getMessageEncoding(message);
   const counter = window.crypto.getRandomValues(new Uint8Array(16));
 
   const importedKey = await window.crypto.subtle.importKey('jwk',
@@ -147,8 +242,149 @@ const decryptAES = async (message, key) => {
     str2ab(message.message),
   );
 
-  return ab2str(decryptedMessage);
+  return new TextDecoder().decode(decryptedMessage);
 };
+
+const generateSignKeys = async () => {
+  const key = await window.crypto.subtle.generateKey(
+    {
+      name: 'ECDSA',
+      namedCurve: 'P-384',
+    },
+    true,
+    ['sign', 'verify'],
+  );
+
+  return {
+    publicKey: await window.crypto.subtle.exportKey('jwk', key.publicKey),
+    privateKey: await window.crypto.subtle.exportKey('jwk', key.privateKey),
+  };
+};
+
+const generateSignature = async (message, privateKey) => {
+  const encoded = getMessageEncoding(message);
+  const importedKey = await window.crypto.subtle.importKey('jwk', privateKey, {
+    name: 'ECDSA',
+    namedCurve: 'P-384',
+  }, true, ['sign']);
+  const signature = await window.crypto.subtle.sign(
+    {
+      name: 'ECDSA',
+      hash: { name: 'SHA-384' },
+    },
+    importedKey,
+    encoded,
+  );
+  return ab2str(signature);
+};
+
+const verifySignature = async (message, signature, publicKey) => {
+  const encoded = getMessageEncoding(message);
+  const importedKey = await window.crypto.subtle.importKey('jwk', publicKey, {
+    name: 'ECDSA',
+    namedCurve: 'P-384',
+  }, true, ['verify']);
+  return window.crypto.subtle.verify(
+    {
+      name: 'ECDSA',
+      hash: { name: 'SHA-384' },
+    },
+    importedKey,
+    str2ab(signature),
+    encoded,
+  );
+};
+
+
+const wrapSignKey = async (keyToWrap, password) => {
+  const importedKey = await window.crypto.subtle.importKey(
+    'jwk',
+    keyToWrap,
+    {
+      name: 'ECDSA',
+      namedCurve: 'P-384',
+    },
+    true,
+    ['sign'],
+  );
+  const keyMaterial = await window.crypto.subtle.importKey(
+    'raw',
+    getMessageEncoding(password),
+    { name: 'PBKDF2' },
+    false,
+    ['deriveBits', 'deriveKey'],
+  );
+  const salt = await window.crypto.getRandomValues(new Uint8Array(16));
+  const wrappingKey = await window.crypto.subtle.deriveKey(
+    {
+      name: 'PBKDF2',
+      salt,
+      iterations: 100000,
+      hash: 'SHA-256',
+    },
+    keyMaterial,
+    { name: 'AES-GCM', length: 256 },
+    true,
+    ['wrapKey', 'unwrapKey'],
+  );
+  const iv = await window.crypto.getRandomValues(new Uint8Array(12));
+  const wrappedKey = await window.crypto.subtle.wrapKey(
+    'jwk',
+    importedKey,
+    wrappingKey,
+    {
+      name: 'AES-GCM',
+      iv,
+    },
+  );
+
+  return {
+    key: ab2str(wrappedKey),
+    iv: iv.toString(),
+    salt: salt.toString(),
+  };
+};
+
+const unwrapSignKey = async ({ key, salt, iv }, password) => {
+  const keyMaterial = await window.crypto.subtle.importKey(
+    'raw',
+    getMessageEncoding(password),
+    { name: 'PBKDF2' },
+    false,
+    ['deriveBits', 'deriveKey'],
+  );
+
+  const unwrappingKey = await window.crypto.subtle.deriveKey(
+    {
+      name: 'PBKDF2',
+      salt: Uint8Array.from(salt.split(',')),
+      iterations: 100000,
+      hash: 'SHA-256',
+    },
+    keyMaterial,
+    { name: 'AES-GCM', length: 256 },
+    true,
+    ['wrapKey', 'unwrapKey'],
+  );
+  const unwrappedKey = await window.crypto.subtle.unwrapKey(
+    'jwk',
+    str2ab(key),
+    unwrappingKey,
+    {
+      name: 'AES-GCM',
+      iv: Uint8Array.from(iv.split(',')),
+    },
+    {
+      name: 'ECDSA',
+      namedCurve: 'P-384',
+    },
+    true,
+    ['sign'],
+  );
+
+  return window.crypto.subtle.exportKey('jwk', unwrappedKey);
+};
+
 
 module.exports = {
   generateRsaKeys,
@@ -157,4 +393,11 @@ module.exports = {
   generateAESKey,
   encryptAES,
   decryptAES,
+  wrapRSAKey,
+  unwrapRSAKey,
+  generateSignKeys,
+  generateSignature,
+  verifySignature,
+  wrapSignKey,
+  unwrapSignKey,
 };
