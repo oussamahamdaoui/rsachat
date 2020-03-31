@@ -2,6 +2,7 @@ const { html } = require('@forgjs/noframework');
 require('babel-polyfill');
 // const socketIo = require('socket.io-client');
 const { Component } = require('./rooter');
+const GlobalEvents = require('./GlobalEvents');
 const api = require('./api');
 
 

@@ -9,6 +9,10 @@ module.exports = async (req, res) => {
       username,
       password,
       code,
+      privateRSAKey,
+      publicRSAKey,
+      privateSignKey,
+      publicSignKey,
     } = req.body;
 
 
@@ -49,6 +53,10 @@ module.exports = async (req, res) => {
       email,
       username,
       password: await hashPassword(password),
+      privateRSAKey,
+      publicRSAKey,
+      privateSignKey,
+      publicSignKey,
     }).save();
 
     return res.json({

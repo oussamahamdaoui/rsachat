@@ -2,9 +2,11 @@ const { html, $ } = require('@forgjs/noframework');
 const Input = require('./components/Input');
 const NavBar = require('./components/NavBar');
 const api = require('./api');
-const c = require('./crypto');
+const {
+  generateSignKeys,
+  generateRsaKeys,
+} = require('./crypto');
 
-window.c = c;
 
 const SignUp = () => {
   const usernameElement = Input({ props: { type: 'text', placeholder: 'Username' } });
@@ -28,14 +30,14 @@ const SignUp = () => {
             ${emailElement}
             ${passwordElement}
             ${confirmPasswordElement}
-            <button class="login-button">Sign up</button>
+            <button class="login-button button">Sign up</button>
           </form>
         </div>
         <div class="slider-card">
           <form class="create-user">
             <h2>Enter validation code you got in your email</h2>
             ${ValidationCodeElement}
-            <button class="send-code">Send</button>
+            <button class="send-code button">Send</button>
           </form>
         </div>
       </div>
@@ -56,10 +58,23 @@ const SignUp = () => {
   });
 
   $('.create-user', DomElement).addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const rsaKeys = await generateRsaKeys();
+    const signKeys = await generateSignKeys();
+    api.setRsaKeys(rsaKeys);
+    api.setSignKeys(signKeys);
+
     const code = ValidationCodeElement.value;
     const email = emailElement.value;
     const username = usernameElement.value;
     const password = passwordElement.value;
+
+    await api.signUp({
+      code,
+      email,
+      username,
+      password,
+    });
   });
   return DomElement;
 };

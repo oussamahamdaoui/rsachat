@@ -39,6 +39,49 @@
   background-color: #dcdde1;
   color: #2f3640;
 }
+.contacts .friend-requests {
+  display: flex;
+  height: 150px;
+  padding: 1em;
+}
+.contacts .friend-requests:empty {
+  display: none;
+}
+.contacts .friend-requests > div {
+  width: 150px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  border: 1px solid #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.16), 0 2px 3px rgba(0, 0, 0, 0.23);
+  margin-right: 10px;
+}
+.contacts .friend-requests > div .status {
+  font-size: 0.5em;
+  text-align: center;
+}
+.contacts .friend-requests > div .buttons {
+  display: flex;
+}
+.contacts .friend-requests > div .buttons button {
+  border: none;
+  background-color: #0097e6;
+  color: #fff;
+  border-radius: 3px;
+  margin: 0px 5px;
+  padding: 5px;
+}
+.contacts .friend-requests > div .user-image {
+  height: 50px;
+  width: 50px;
+  border-radius: 50px;
+  background-size: cover;
+  background-position: center;
+  background-image: url(https://randomuser.me/api/portraits/women/22.jpg);
+}
 .contacts .contact-list {
   display: flex;
   margin-top: 15px;
@@ -52,9 +95,18 @@
   min-height: min-content;
   overflow: scroll;
 }
-.contacts .contact-list .list div {
+.contacts .contact-list .list > div {
   padding: 15px;
   cursor: pointer;
+  display: flex;
+}
+.contacts .contact-list .list > div .username {
+  flex: 1;
+  align-items: center;
+}
+.contacts .contact-list .list > div .actions {
+  display: flex;
+  align-items: center;
 }
 .contacts .contact-list .alphabet {
   width: 30px;
@@ -276,16 +328,6 @@
   font-size: 1em;
   cursor: pointer;
 }
-.log-in form .login-button,
-.sign-up form .login-button {
-  background-color: #0097e6;
-  border: none;
-  padding: 10px 10px;
-  color: #fff;
-  margin-top: 1em;
-  border-radius: 30px;
-  font-size: 1em;
-}
 
 .nav-bar {
   position: fixed;
@@ -298,6 +340,31 @@
 }
 .nav-bar img {
   height: 50px;
+}
+
+.alert {
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.alert .content {
+  width: 50%;
+  min-height: 200px;
+  background-color: #fff;
+  padding: 1em;
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px;
+}
+.alert .content .message {
+  flex: 1;
 }
 
 * {
@@ -317,6 +384,16 @@ body {
   width: 100vw;
   min-height: 100vh;
   display: flex;
+}
+
+.button {
+  background-color: #0097e6;
+  border: none;
+  padding: 10px 10px;
+  color: #fff;
+  margin-top: 1em;
+  border-radius: 30px;
+  font-size: 1em;
 }
 
 /*# sourceMappingURL=index.css.map */

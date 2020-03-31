@@ -10,8 +10,8 @@ const Alert = ({
     <div class="content">
       <div class="message">${message}</div>
       <div class="buttons">
-        ${yes ? html`<button class="yes">${yes}</button>` : ''}
-        ${no ? html`<button class="no">${no}</button>` : ''}
+        ${yes ? html`<button class="yes button">${yes}</button>` : ''}
+        ${no ? html`<button class="no button">${no}</button>` : ''}
       </div>
     </div>
   </div>`;

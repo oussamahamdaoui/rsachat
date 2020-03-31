@@ -47,15 +47,5 @@
         cursor: pointer;
       }
     }
-
-    .login-button {
-      background-color: colors.$chat-send-message-button-bg;
-      border: none;
-      padding: 10px 10px;
-      color: colors.$chat-send-message-button-fg;
-      margin-top: 1em;
-      border-radius: 30px;
-      font-size: 1em;
-    }
   }
 }

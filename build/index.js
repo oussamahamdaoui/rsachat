@@ -10692,13 +10692,20 @@ module.exports = __webpack_require__(/*! /home/travis/build/feathericons/feather
 var _require = require('@forgjs/noframework'),
     EventManager = _require.EventManager;
 
+window.addEventListener('popstate', function () {
+  EventManager.emit('reroute', document.location.pathname);
+});
 module.exports = new EventManager();
 
 },{"@forgjs/noframework":1}],335:[function(require,module,exports){
 "use strict";
 
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 function _templateObject() {
-  var data = _taggedTemplateLiteral(["\n    <div class=\"log-in\">\n      ", "\n      <h2>Log in</h2>\n      <form>\n        ", "\n        ", "\n        <button class=\"login-button\">Login</button>\n        <div> Don't have an account? <button class=\"to-sign-up\">sign up</button></div>\n      </form>\n    </div>\n  "]);
+  var data = _taggedTemplateLiteral(["\n    <div class=\"log-in\">\n      ", "\n      <h2>Log in</h2>\n      <form>\n        ", "\n        ", "\n        <button class=\"login-button button\">Login</button>\n        <div> Don't have an account? <button class=\"to-sign-up\">sign up</button></div>\n      </form>\n    </div>\n  "]);
 
   _templateObject = function _templateObject() {
     return data;
@@ -10719,22 +10726,53 @@ var NavBar = require('./components/NavBar');
 
 var GlobalEvents = require('./GlobalEvents');
 
+var api = require('./api');
+
 var LogIn = function LogIn() {
-  var DomElement = html(_templateObject(), NavBar(), Input({
+  var logInElement = Input({
     props: {
       type: 'text',
       placeholder: 'Email or username'
     }
-  }), Input({
+  });
+  var passwordElement = Input({
     props: {
       type: 'password',
       placeholder: 'Password'
     }
-  }));
-  $('form', DomElement).addEventListener('submit', function (e) {
-    e.preventDefault();
   });
-  $('.to-sign-up', DomElement).addEventListener('click', function () {
+  var DomElement = html(_templateObject(), NavBar(), logInElement, passwordElement);
+  $('form', DomElement).addEventListener('submit',
+  /*#__PURE__*/
+  function () {
+    var _ref = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee(e) {
+      return regeneratorRuntime.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              e.preventDefault();
+              _context.next = 3;
+              return api.logIn({
+                login: logInElement.value,
+                password: passwordElement.value
+              });
+
+            case 3:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee);
+    }));
+
+    return function (_x) {
+      return _ref.apply(this, arguments);
+    };
+  }());
+  $('.to-sign-up', DomElement).addEventListener('click', function (e) {
+    e.preventDefault();
     GlobalEvents.emit('reroute', '/sign-up');
   });
   return DomElement;
@@ -10742,7 +10780,7 @@ var LogIn = function LogIn() {
 
 module.exports = LogIn;
 
-},{"./GlobalEvents":334,"./components/Input":343,"./components/NavBar":344,"@forgjs/noframework":1}],336:[function(require,module,exports){
+},{"./GlobalEvents":334,"./api":339,"./components/Input":347,"./components/NavBar":348,"@forgjs/noframework":1}],336:[function(require,module,exports){
 "use strict";
 
 function _templateObject() {
@@ -10771,7 +10809,35 @@ var LoggedIn = function LoggedIn() {
 
 module.exports = LoggedIn;
 
-},{"./components/Chat":340,"./components/SideBar":345,"@forgjs/noframework":1}],337:[function(require,module,exports){
+},{"./components/Chat":341,"./components/SideBar":349,"@forgjs/noframework":1}],337:[function(require,module,exports){
+"use strict";
+
+function _templateObject() {
+  var data = _taggedTemplateLiteral(["<div>\n    ", "\n  </div>"]);
+
+  _templateObject = function _templateObject() {
+    return data;
+  };
+
+  return data;
+}
+
+function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+var _require = require('@forgjs/noframework'),
+    html = _require.html;
+
+var _require2 = require('./components/openPeeps'),
+    OpenPeeps = _require2.OpenPeeps;
+
+var OpenPeepsComponent = function OpenPeepsComponent() {
+  var DomElement = html(_templateObject(), OpenPeeps({}));
+  return DomElement;
+};
+
+module.exports = OpenPeepsComponent;
+
+},{"./components/openPeeps":351,"@forgjs/noframework":1}],338:[function(require,module,exports){
 "use strict";
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -10779,7 +10845,7 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 function _templateObject() {
-  var data = _taggedTemplateLiteral(["\n    <div class=\"sign-up\">\n      ", "\n      <h2>Sign up</h2>\n      <div class=\"slider\">\n        <div class=\"slider-card\">\n          <form class=\"request-code\">\n            ", "\n            ", "\n            ", "\n            ", "\n            <button class=\"login-button\">Sign up</button>\n          </form>\n        </div>\n        <div class=\"slider-card\">\n          <form class=\"create-user\">\n            <h2>Enter validation code you got in your email</h2>\n            ", "\n            <button class=\"send-code\">Send</button>\n          </form>\n        </div>\n      </div>\n    </div>\n  "]);
+  var data = _taggedTemplateLiteral(["\n    <div class=\"sign-up\">\n      ", "\n      <h2>Sign up</h2>\n      <div class=\"slider\">\n        <div class=\"slider-card\">\n          <form class=\"request-code\">\n            ", "\n            ", "\n            ", "\n            ", "\n            <button class=\"login-button button\">Sign up</button>\n          </form>\n        </div>\n        <div class=\"slider-card\">\n          <form class=\"create-user\">\n            <h2>Enter validation code you got in your email</h2>\n            ", "\n            <button class=\"send-code button\">Send</button>\n          </form>\n        </div>\n      </div>\n    </div>\n  "]);
 
   _templateObject = function _templateObject() {
     return data;
@@ -10800,9 +10866,9 @@ var NavBar = require('./components/NavBar');
 
 var api = require('./api');
 
-var c = require('./crypto');
-
-window.c = c;
+var _require2 = require('./crypto'),
+    generateSignKeys = _require2.generateSignKeys,
+    generateRsaKeys = _require2.generateRsaKeys;
 
 var SignUp = function SignUp() {
   var usernameElement = Input({
@@ -10874,17 +10940,37 @@ var SignUp = function SignUp() {
     var _ref2 = _asyncToGenerator(
     /*#__PURE__*/
     regeneratorRuntime.mark(function _callee2(e) {
-      var code, email, username, password;
+      var rsaKeys, signKeys, code, email, username, password;
       return regeneratorRuntime.wrap(function _callee2$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
+              e.preventDefault();
+              _context2.next = 3;
+              return generateRsaKeys();
+
+            case 3:
+              rsaKeys = _context2.sent;
+              _context2.next = 6;
+              return generateSignKeys();
+
+            case 6:
+              signKeys = _context2.sent;
+              api.setRsaKeys(rsaKeys);
+              api.setSignKeys(signKeys);
               code = ValidationCodeElement.value;
               email = emailElement.value;
               username = usernameElement.value;
               password = passwordElement.value;
+              _context2.next = 15;
+              return api.signUp({
+                code: code,
+                email: email,
+                username: username,
+                password: password
+              });
 
-            case 4:
+            case 15:
             case "end":
               return _context2.stop();
           }
@@ -10901,7 +10987,7 @@ var SignUp = function SignUp() {
 
 module.exports = SignUp;
 
-},{"./api":338,"./components/Input":343,"./components/NavBar":344,"./crypto":347,"@forgjs/noframework":1}],338:[function(require,module,exports){
+},{"./api":339,"./components/Input":347,"./components/NavBar":348,"./crypto":352,"@forgjs/noframework":1}],339:[function(require,module,exports){
 "use strict";
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -10923,14 +11009,23 @@ var _require = require('./utils'),
     parseJwt = _require.parseJwt,
     _post = _require.post;
 
+var _require2 = require('./crypto'),
+    wrapRSAKey = _require2.wrapRSAKey,
+    wrapSignKey = _require2.wrapSignKey,
+    unwrapRSAKey = _require2.unwrapRSAKey,
+    unwrapSignKey = _require2.unwrapSignKey;
+
 var Api =
 /*#__PURE__*/
 function () {
   function Api() {
     _classCallCheck(this, Api);
 
-    this.token = localStorage.getItem('token') || null;
+    this.token = sessionStorage.getItem('token') || null;
     this.apiUrl = '/api';
+    this.rsaKeys = null;
+    this.signKeys = null;
+    this.socket = null;
   }
 
   _createClass(Api, [{
@@ -10939,24 +11034,48 @@ function () {
       var _signUp = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee(_ref) {
-        var username, email, password;
+        var username, email, password, code;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                username = _ref.username, email = _ref.email, password = _ref.password;
-                Api.post('sign-up', {
-                  username: username,
-                  email: email,
-                  password: password
-                });
+                username = _ref.username, email = _ref.email, password = _ref.password, code = _ref.code;
+                _context.t0 = Api;
+                _context.t1 = username;
+                _context.t2 = email;
+                _context.t3 = password;
+                _context.t4 = code;
+                _context.next = 8;
+                return wrapRSAKey(this.rsaKeys.privateKey, password);
 
-              case 2:
+              case 8:
+                _context.t5 = _context.sent;
+                _context.t6 = this.rsaKeys.publicKey;
+                _context.next = 12;
+                return wrapSignKey(this.signKeys.privateKey, password);
+
+              case 12:
+                _context.t7 = _context.sent;
+                _context.t8 = this.signKeys.publicKey;
+                _context.t9 = {
+                  username: _context.t1,
+                  email: _context.t2,
+                  password: _context.t3,
+                  code: _context.t4,
+                  privateRSAKey: _context.t5,
+                  publicRSAKey: _context.t6,
+                  privateSignKey: _context.t7,
+                  publicSignKey: _context.t8
+                };
+                _context.next = 17;
+                return _context.t0.post.call(_context.t0, 'sign-up', _context.t9);
+
+              case 17:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee);
+        }, _callee, this);
       }));
 
       function signUp(_x) {
@@ -10966,45 +11085,294 @@ function () {
       return signUp;
     }()
   }, {
-    key: "requestEmailCode",
+    key: "logIn",
     value: function () {
-      var _requestEmailCode = _asyncToGenerator(
+      var _logIn = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee2(_ref2) {
-        var email, res;
+        var login, password, res;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                email = _ref2.email;
+                login = _ref2.login, password = _ref2.password;
                 _context2.next = 3;
+                return Api.post('login', {
+                  login: login,
+                  password: password
+                });
+
+              case 3:
+                res = _context2.sent;
+
+                if (!res.error) {
+                  _context2.next = 6;
+                  break;
+                }
+
+                return _context2.abrupt("return");
+
+              case 6:
+                this.token = res.token;
+                this.data = parseJwt(this.token);
+                _context2.t0 = res.publicRSAKey;
+                _context2.next = 11;
+                return unwrapRSAKey(res.privateRSAKey, password);
+
+              case 11:
+                _context2.t1 = _context2.sent;
+                this.rsaKeys = {
+                  publicKey: _context2.t0,
+                  privateKey: _context2.t1
+                };
+                _context2.t2 = res.publicSignKey;
+                _context2.next = 16;
+                return unwrapSignKey(res.privateSignKey, password);
+
+              case 16:
+                _context2.t3 = _context2.sent;
+                this.signKeys = {
+                  publicKey: _context2.t2,
+                  privateSignKey: _context2.t3
+                };
+                sessionStorage.setItem('token', this.token);
+                sessionStorage.setItem('rsaKeys', JSON.stringify(this.rsaKeys));
+                sessionStorage.setItem('signKeys', JSON.stringify(this.signKeys));
+                GlobalEvents.emit('reroute', '/');
+                this.getFriendRequests();
+                this.getFriends();
+
+              case 24:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+
+      function logIn(_x2) {
+        return _logIn.apply(this, arguments);
+      }
+
+      return logIn;
+    }()
+  }, {
+    key: "requestEmailCode",
+    value: function () {
+      var _requestEmailCode = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee3(_ref3) {
+        var email, res;
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                email = _ref3.email;
+                _context3.next = 3;
                 return Api.post('request-email-validation-code', {
                   email: email
                 });
 
               case 3:
-                res = _context2.sent;
-                return _context2.abrupt("return", res);
+                res = _context3.sent;
+                return _context3.abrupt("return", res);
 
               case 5:
               case "end":
-                return _context2.stop();
+                return _context3.stop();
             }
           }
-        }, _callee2);
+        }, _callee3);
       }));
 
-      function requestEmailCode(_x2) {
+      function requestEmailCode(_x3) {
         return _requestEmailCode.apply(this, arguments);
       }
 
       return requestEmailCode;
     }()
   }, {
+    key: "setRsaKeys",
+    value: function setRsaKeys(rsaKeys) {
+      this.rsaKeys = rsaKeys;
+    }
+  }, {
+    key: "setSignKeys",
+    value: function setSignKeys(signKeys) {
+      this.signKeys = signKeys;
+    }
+  }, {
+    key: "searchUsers",
+    value: function () {
+      var _searchUsers = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee4(_ref4) {
+        var q;
+        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                q = _ref4.q;
+                return _context4.abrupt("return", Api.post('search-users', {
+                  q: q
+                }, this.token));
+
+              case 2:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, _callee4, this);
+      }));
+
+      function searchUsers(_x4) {
+        return _searchUsers.apply(this, arguments);
+      }
+
+      return searchUsers;
+    }()
+  }, {
+    key: "sendFriendRequest",
+    value: function () {
+      var _sendFriendRequest = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee5(_ref5) {
+        var to;
+        return regeneratorRuntime.wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                to = _ref5.to;
+                return _context5.abrupt("return", Api.post('send-friend-request', {
+                  to: to
+                }, this.token));
+
+              case 2:
+              case "end":
+                return _context5.stop();
+            }
+          }
+        }, _callee5, this);
+      }));
+
+      function sendFriendRequest(_x5) {
+        return _sendFriendRequest.apply(this, arguments);
+      }
+
+      return sendFriendRequest;
+    }()
+  }, {
+    key: "getFriendRequests",
+    value: function () {
+      var _getFriendRequests = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee6() {
+        var friendRequests;
+        return regeneratorRuntime.wrap(function _callee6$(_context6) {
+          while (1) {
+            switch (_context6.prev = _context6.next) {
+              case 0:
+                _context6.next = 2;
+                return Api.post('get-friend-requests', {}, this.token);
+
+              case 2:
+                friendRequests = _context6.sent;
+                GlobalEvents.emit('got-friend-requests', friendRequests.friendRequests);
+
+              case 4:
+              case "end":
+                return _context6.stop();
+            }
+          }
+        }, _callee6, this);
+      }));
+
+      function getFriendRequests() {
+        return _getFriendRequests.apply(this, arguments);
+      }
+
+      return getFriendRequests;
+    }()
+  }, {
+    key: "acceptFriendRequest",
+    value: function () {
+      var _acceptFriendRequest = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee7(requestId) {
+        var res;
+        return regeneratorRuntime.wrap(function _callee7$(_context7) {
+          while (1) {
+            switch (_context7.prev = _context7.next) {
+              case 0:
+                _context7.next = 2;
+                return Api.post('accept-friend-request', {
+                  _id: requestId
+                }, this.token);
+
+              case 2:
+                res = _context7.sent;
+                this.getFriends();
+                return _context7.abrupt("return", res);
+
+              case 5:
+              case "end":
+                return _context7.stop();
+            }
+          }
+        }, _callee7, this);
+      }));
+
+      function acceptFriendRequest(_x6) {
+        return _acceptFriendRequest.apply(this, arguments);
+      }
+
+      return acceptFriendRequest;
+    }()
+  }, {
+    key: "getFriends",
+    value: function () {
+      var _getFriends = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee8() {
+        var friends;
+        return regeneratorRuntime.wrap(function _callee8$(_context8) {
+          while (1) {
+            switch (_context8.prev = _context8.next) {
+              case 0:
+                _context8.next = 2;
+                return Api.post('get-friends', {}, this.token);
+
+              case 2:
+                friends = _context8.sent;
+
+                if (!friends.error) {
+                  GlobalEvents.emit('got-friends', friends.friends);
+                }
+
+              case 4:
+              case "end":
+                return _context8.stop();
+            }
+          }
+        }, _callee8, this);
+      }));
+
+      function getFriends() {
+        return _getFriends.apply(this, arguments);
+      }
+
+      return getFriends;
+    }()
+  }, {
     key: "init",
     value: function init() {
       if (this.token) {
         this.data = parseJwt(this.token);
+        this.rsaKeys = JSON.parse(sessionStorage.getItem('rsaKeys'));
+        this.signKeys = JSON.parse(sessionStorage.getItem('signKeys'));
+        GlobalEvents.emit('reroute', '/');
+        this.getFriendRequests();
+        this.getFriends();
       } else {
         GlobalEvents.emit('reroute', '/log-in');
       }
@@ -11014,34 +11382,35 @@ function () {
     value: function () {
       var _post2 = _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee3() {
+      regeneratorRuntime.mark(function _callee9() {
         var res,
-            _args3 = arguments;
-        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+            _args9 = arguments;
+        return regeneratorRuntime.wrap(function _callee9$(_context9) {
           while (1) {
-            switch (_context3.prev = _context3.next) {
+            switch (_context9.prev = _context9.next) {
               case 0:
-                _context3.next = 2;
-                return _post("".concat(window.location.protocol).concat(window.location.host.replace('5500', '3000'), "/api/")).apply(void 0, _args3);
+                _context9.next = 2;
+                return _post("".concat(window.location.protocol).concat(window.location.host.replace('5500', '3000'), "/api/")).apply(void 0, _args9);
 
               case 2:
-                res = _context3.sent;
+                res = _context9.sent;
 
                 if (res.error) {
                   Alert({
-                    message: res.error,
-                    timeout: 5000
+                    message: res.message || 'Unexpected error occurred',
+                    timeout: 5000,
+                    yes: 'Ok'
                   });
                 }
 
-                return _context3.abrupt("return", res);
+                return _context9.abrupt("return", res);
 
               case 5:
               case "end":
-                return _context3.stop();
+                return _context9.stop();
             }
           }
-        }, _callee3);
+        }, _callee9);
       }));
 
       function post() {
@@ -11057,11 +11426,11 @@ function () {
 
 module.exports = new Api();
 
-},{"./GlobalEvents":334,"./components/Alert":339,"./utils":350}],339:[function(require,module,exports){
+},{"./GlobalEvents":334,"./components/Alert":340,"./crypto":352,"./utils":355}],340:[function(require,module,exports){
 "use strict";
 
 function _templateObject3() {
-  var data = _taggedTemplateLiteral(["<button class=\"no\">", "</button>"]);
+  var data = _taggedTemplateLiteral(["<button class=\"no button\">", "</button>"]);
 
   _templateObject3 = function _templateObject3() {
     return data;
@@ -11071,7 +11440,7 @@ function _templateObject3() {
 }
 
 function _templateObject2() {
-  var data = _taggedTemplateLiteral(["<button class=\"yes\">", "</button>"]);
+  var data = _taggedTemplateLiteral(["<button class=\"yes button\">", "</button>"]);
 
   _templateObject2 = function _templateObject2() {
     return data;
@@ -11128,7 +11497,7 @@ var Alert = function Alert(_ref) {
 
 module.exports = Alert;
 
-},{"@forgjs/noframework":1}],340:[function(require,module,exports){
+},{"@forgjs/noframework":1}],341:[function(require,module,exports){
 "use strict";
 
 function _templateObject() {
@@ -11162,28 +11531,8 @@ var Chat = function Chat() {
 
 module.exports = Chat;
 
-},{"./Icon":342,"./Input":343,"@forgjs/noframework":1}],341:[function(require,module,exports){
+},{"./Icon":346,"./Input":347,"@forgjs/noframework":1}],342:[function(require,module,exports){
 "use strict";
-
-function _templateObject3() {
-  var data = _taggedTemplateLiteral(["<div>", "</div>"]);
-
-  _templateObject3 = function _templateObject3() {
-    return data;
-  };
-
-  return data;
-}
-
-function _templateObject2() {
-  var data = _taggedTemplateLiteral(["\n  <div class=\"contacts\">\n  <h2>Contacts</h2>\n    ", "\n\n    <div class=\"contact-list\">\n      <div class=\"list\">\n        ", "      \n      </div>\n      <div class=\"alphabet\">", "</div>\n    </div>\n  </div>\n  "]);
-
-  _templateObject2 = function _templateObject2() {
-    return data;
-  };
-
-  return data;
-}
 
 function _templateObject() {
   var data = _taggedTemplateLiteral(["<span class=\"letter-", "\">", "</span>"]);
@@ -11198,30 +11547,133 @@ function _templateObject() {
 function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
 var _require = require('@forgjs/noframework'),
-    html = _require.html,
-    $ = _require.$,
-    $$ = _require.$$;
+    html = _require.html;
 
 var _require2 = require('../utils'),
     genCharArray = _require2.genCharArray;
 
-var Input = require('./Input');
-
-var Contacts = function Contacts() {
+var ContactAlphabet = function ContactAlphabet() {
   var alphabet = genCharArray('a', 'z').map(function (_char) {
     return html(_templateObject(), _char, _char);
   });
   alphabet[0].classList.add('current');
-  var contactNames = ['Annmarie', 'Kassia', 'Cathryn', 'Marie-Jeanne', 'Lurlene', 'Genvieve', 'Tomi', 'Marketa', 'Elberta', 'Hilda', 'Wilone', 'Clarisse', 'Bernadina', 'Berni', 'Shandra', 'Adore', 'Elise', 'Koralle', 'Colette', 'Jocelyne', 'Verile', 'Libbie', 'Demeter', 'Auroora', 'Catarina', 'Tamarra', 'Neilla', 'Maren', 'Devinne', 'Marilyn'];
-  var DomElement = html(_templateObject2(), Input({
+  return alphabet;
+};
+
+module.exports = ContactAlphabet;
+
+},{"../utils":355,"@forgjs/noframework":1}],343:[function(require,module,exports){
+"use strict";
+
+function _templateObject2() {
+  var data = _taggedTemplateLiteral(["<div>\n    <div class=\"username\">", "</div>\n      <div class=\"actions\">\n        <div class=\"remove\">", "</div>\n      </div>\n    </div>"]);
+
+  _templateObject2 = function _templateObject2() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject() {
+  var data = _taggedTemplateLiteral(["<div>\n    <div class=\"username\">", "</div>\n      <div class=\"actions\">\n        <div class=\"add\">", "</div>\n      </div>\n    </div>"]);
+
+  _templateObject = function _templateObject() {
+    return data;
+  };
+
+  return data;
+}
+
+function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+var _require = require('@forgjs/noframework'),
+    html = _require.html,
+    $ = _require.$;
+
+var Icon = require('./Icon');
+
+var ContactListElement = function ContactListElement(_ref, eventManager) {
+  var _ref$type = _ref.type,
+      type = _ref$type === void 0 ? 'search' : _ref$type,
+      username = _ref.username,
+      _id = _ref._id;
+  var DomElement = null;
+
+  if (type === 'search') {
+    DomElement = html(_templateObject(), username, Icon('plus'));
+    $('.add', DomElement).addEventListener('click', function () {
+      eventManager.emit('send-event-request', _id);
+    });
+  } else {
+    DomElement = html(_templateObject2(), username, Icon('trash'));
+  }
+
+  return DomElement;
+};
+
+module.exports = ContactListElement;
+
+},{"./Icon":346,"@forgjs/noframework":1}],344:[function(require,module,exports){
+"use strict";
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function _templateObject() {
+  var data = _taggedTemplateLiteral(["\n  <div class=\"contacts\">\n  <h2>Contacts</h2>\n    ", "\n    <div class=\"friend-requests\"></div>\n    <div class=\"contact-list\">\n      <div class=\"list\">      \n      </div>\n      <div class=\"alphabet\">", "</div>\n    </div>\n  </div>\n  "]);
+
+  _templateObject = function _templateObject() {
+    return data;
+  };
+
+  return data;
+}
+
+function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+var _require = require('@forgjs/noframework'),
+    html = _require.html,
+    $ = _require.$,
+    $$ = _require.$$,
+    EventManager = _require.EventManager,
+    emptyElement = _require.emptyElement;
+
+var api = require('../api');
+
+var Input = require('./Input');
+
+var alphabet = require('./ContactAlphabet');
+
+var ContactListElement = require('./ContactListElement');
+
+var FriendRequest = require('./FriendRequest');
+
+var GlobalEvents = require('../GlobalEvents');
+
+var Contacts = function Contacts() {
+  var eventManager = new EventManager();
+  var searchInput = Input({
     props: {
       placeholder: 'search...'
     },
-    icon: 'search'
-  }), contactNames.sort().map(function (name) {
-    return html(_templateObject3(), name);
-  }), alphabet);
+    icon: 'search',
+    onInput: function onInput(e) {
+      eventManager.emit('search', e);
+    }
+  });
+  var DomElement = html(_templateObject(), searchInput, alphabet());
   var contactListElem = $('.list', DomElement);
+  var friendRequestsElem = $('.friend-requests', DomElement);
+  var timeOut = null;
+  var friendsList = [];
 
   function isElementInViewport(el, parent) {
     var rect = el.getBoundingClientRect();
@@ -11229,6 +11681,123 @@ var Contacts = function Contacts() {
     return rect.top - parentRect.top >= 0;
   }
 
+  eventManager.subscribe('search',
+  /*#__PURE__*/
+  _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee2() {
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            if (timeOut) {
+              clearTimeout(timeOut);
+            }
+
+            timeOut = setTimeout(
+            /*#__PURE__*/
+            _asyncToGenerator(
+            /*#__PURE__*/
+            regeneratorRuntime.mark(function _callee() {
+              var req;
+              return regeneratorRuntime.wrap(function _callee$(_context) {
+                while (1) {
+                  switch (_context.prev = _context.next) {
+                    case 0:
+                      if (searchInput.value === '') {
+                        GlobalEvents.emit('got-friends', friendsList);
+                      }
+
+                      _context.next = 3;
+                      return api.searchUsers({
+                        q: searchInput.value
+                      });
+
+                    case 3:
+                      req = _context.sent;
+
+                      if (!req.error) {
+                        emptyElement(contactListElem);
+                        req.users.forEach(function (user) {
+                          contactListElem.appendChild(ContactListElement(user, eventManager));
+                        });
+                      }
+
+                    case 5:
+                    case "end":
+                      return _context.stop();
+                  }
+                }
+              }, _callee);
+            })), 500);
+
+          case 2:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2);
+  })));
+  eventManager.subscribe('send-event-request',
+  /*#__PURE__*/
+  function () {
+    var _ref3 = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee3(id) {
+      return regeneratorRuntime.wrap(function _callee3$(_context3) {
+        while (1) {
+          switch (_context3.prev = _context3.next) {
+            case 0:
+              _context3.next = 2;
+              return api.sendFriendRequest({
+                to: id
+              });
+
+            case 2:
+            case "end":
+              return _context3.stop();
+          }
+        }
+      }, _callee3);
+    }));
+
+    return function (_x) {
+      return _ref3.apply(this, arguments);
+    };
+  }());
+  eventManager.subscribe('accept-friend-request',
+  /*#__PURE__*/
+  function () {
+    var _ref4 = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee4(_id) {
+      var res;
+      return regeneratorRuntime.wrap(function _callee4$(_context4) {
+        while (1) {
+          switch (_context4.prev = _context4.next) {
+            case 0:
+              _context4.next = 2;
+              return api.acceptFriendRequest(_id);
+
+            case 2:
+              res = _context4.sent;
+
+              if (!res.error) {
+                eventManager.emit('remove-friend-request', _id);
+              }
+
+            case 4:
+            case "end":
+              return _context4.stop();
+          }
+        }
+      }, _callee4);
+    }));
+
+    return function (_x2) {
+      return _ref4.apply(this, arguments);
+    };
+  }());
   contactListElem.addEventListener('scroll', function () {
     var sc = $$('.list > div').filter(function (el) {
       return isElementInViewport(el, contactListElem);
@@ -11237,12 +11806,82 @@ var Contacts = function Contacts() {
     $('.current', DomElement).classList.remove('current');
     $(".letter-".concat(firstLetter), DomElement).classList.add('current');
   });
+  GlobalEvents.subscribe('got-friends', function (friends) {
+    friendsList = friends;
+    emptyElement(contactListElem);
+    friends.forEach(function (friend) {
+      contactListElem.appendChild(ContactListElement(_objectSpread({}, friend, {
+        type: 'friend'
+      })));
+    });
+  });
+  GlobalEvents.subscribe('got-friend-requests', function (friendRequests) {
+    friendRequests.forEach(function (request) {
+      friendRequestsElem.appendChild(FriendRequest(request, eventManager, api.data));
+    });
+  });
   return DomElement;
 };
 
 module.exports = Contacts;
 
-},{"../utils":350,"./Input":343,"@forgjs/noframework":1}],342:[function(require,module,exports){
+},{"../GlobalEvents":334,"../api":339,"./ContactAlphabet":342,"./ContactListElement":343,"./FriendRequest":345,"./Input":347,"@forgjs/noframework":1}],345:[function(require,module,exports){
+"use strict";
+
+function _templateObject2() {
+  var data = _taggedTemplateLiteral(["<div class=\"got-request\">\n      <div class=\"user-image\"></div>\n      <div class=\"status\">", " send a friend request</div>\n      <div class=\"buttons\">\n        <button class=\"accept\">Accept request</button> \n        <button class=\"reject\">Reject request</button> \n      </div>\n    </div>"]);
+
+  _templateObject2 = function _templateObject2() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject() {
+  var data = _taggedTemplateLiteral(["<div class=\"pending\">\n      <div class=\"user-image\"></div>\n      <div class=\"status\">Pending friend request to ", "</div>\n    </div>"]);
+
+  _templateObject = function _templateObject() {
+    return data;
+  };
+
+  return data;
+}
+
+function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+var _require = require('@forgjs/noframework'),
+    html = _require.html,
+    $ = _require.$;
+
+var FriendRequest = function FriendRequest(_ref, eventManger, currentUser) {
+  var sender = _ref.sender,
+      receiver = _ref.receiver,
+      _id = _ref._id;
+  var DomElement = null;
+
+  if (sender._id === currentUser.data._id) {
+    // pending request
+    DomElement = html(_templateObject(), receiver.username);
+  } else {
+    // got a request
+    DomElement = html(_templateObject2(), sender.username);
+    $('.accept', DomElement).addEventListener('click', function () {
+      eventManger.emit('accept-friend-request', _id);
+    });
+  }
+
+  eventManger.subscribe('remove-friend-request', function (requestId) {
+    if (_id === requestId) {
+      DomElement.remove();
+    }
+  });
+  return DomElement;
+};
+
+module.exports = FriendRequest;
+
+},{"@forgjs/noframework":1}],346:[function(require,module,exports){
 "use strict";
 
 function _templateObject() {
@@ -11269,7 +11908,7 @@ var Icon = function Icon(name) {
 
 module.exports = Icon;
 
-},{"@forgjs/noframework":1,"feather-icons":332}],343:[function(require,module,exports){
+},{"@forgjs/noframework":1,"feather-icons":332}],347:[function(require,module,exports){
 "use strict";
 
 function _templateObject() {
@@ -11310,7 +11949,7 @@ var Input = function Input(_ref) {
 
 module.exports = Input;
 
-},{"./Icon":342,"@forgjs/noframework":1}],344:[function(require,module,exports){
+},{"./Icon":346,"@forgjs/noframework":1}],348:[function(require,module,exports){
 "use strict";
 
 function _templateObject() {
@@ -11335,7 +11974,7 @@ var TopBar = function TopBar() {
 
 module.exports = TopBar;
 
-},{"@forgjs/noframework":1}],345:[function(require,module,exports){
+},{"@forgjs/noframework":1}],349:[function(require,module,exports){
 "use strict";
 
 function _templateObject() {
@@ -11369,7 +12008,7 @@ var SideBar = function SideBar() {
 
 module.exports = SideBar;
 
-},{"./Contacts":341,"./SideBarShortCuts":346,"@forgjs/noframework":1}],346:[function(require,module,exports){
+},{"./Contacts":344,"./SideBarShortCuts":350,"@forgjs/noframework":1}],350:[function(require,module,exports){
 "use strict";
 
 function _templateObject() {
@@ -11400,7 +12039,286 @@ var SideBarShortCuts = function SideBarShortCuts(eventManager) {
 
 module.exports = SideBarShortCuts;
 
-},{"./Icon":342,"@forgjs/noframework":1}],347:[function(require,module,exports){
+},{"./Icon":346,"@forgjs/noframework":1}],351:[function(require,module,exports){
+"use strict";
+
+function _templateObject6() {
+  var data = _taggedTemplateLiteral(["\n      <svg width=\"", "\" height=\"", "\" viewBox=\"0 0 ", " ", "\" xmlns=\"http://www.w3.org/2000/svg\">\n        <g id=\"head\">", "</g>\n        <g id=\"face\" transform=\"translate(160, 183)\">", "</g>\n        <g id=\"facial-hair\" transform=\"translate(122, 340)\">", "</g>\n        <g id=\"accessory\" transform=\"translate(50, 250)\">", "</g>\n      </svg>\n    "]);
+
+  _templateObject6 = function _templateObject6() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject5() {
+  var data = _taggedTemplateLiteral(["", ""]);
+
+  _templateObject5 = function _templateObject5() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject4() {
+  var data = _taggedTemplateLiteral(["", ""]);
+
+  _templateObject4 = function _templateObject4() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject3() {
+  var data = _taggedTemplateLiteral(["", ""]);
+
+  _templateObject3 = function _templateObject3() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject2() {
+  var data = _taggedTemplateLiteral(["", ""]);
+
+  _templateObject2 = function _templateObject2() {
+    return data;
+  };
+
+  return data;
+}
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function _templateObject() {
+  var data = _taggedTemplateLiteral(["<div class=\"open-peeps\"></div>"]);
+
+  _templateObject = function _templateObject() {
+    return data;
+  };
+
+  return data;
+}
+
+function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+var _require = require('@forgjs/noframework'),
+    html = _require.html,
+    $$ = _require.$$;
+
+var ACCESSORY = {
+  EYE_PATCH: 'accessories-Eyepatch.svg',
+  GLASSES_1: 'accessories-Glasses -1.svg',
+  GLASSES_2: 'accessories-Glasses 2.svg',
+  GLASSES_3: 'accessories-Glasses 3.svg',
+  GLASSES_4: 'accessories-Glasses 4.svg',
+  GLASSES_5: 'accessories-Glasses 5.svg',
+  GLASSES_6: 'accessories-Glasses.svg',
+  SUN_GLASSES: 'accessories-Sunglasses.svg',
+  SUN_GLASSES_2: 'accessories-Sunglasses 2.svg'
+};
+var FACE = {
+  ANGRY_WITH_FANG: 'face-Angry with Fang.svg',
+  AWE: 'face-Awe.svg',
+  BLANK: 'face-Blank.svg',
+  CALM: 'face-Calm.svg',
+  CHEEKY: 'face-Cheeky.svg',
+  CONCERNED_FEAR: 'face-Concerned Fear.svg',
+  CONCERNED: 'face-Concerned.svg',
+  CONTEMPT: 'face-Contempt.svg',
+  CUTE: 'face-Cute.svg',
+  CYCLOPS: 'face-Cyclops.svg',
+  DRIVEN: 'face-Driven.svg',
+  EATING_HAPPY: 'face-Eating Happy.svg',
+  EXPLAINING: 'face-explaining.svg',
+  EYES_CLOSED: 'face-Eyes Closed.svg',
+  FEAR: 'face-Fear.svg',
+  HECTIC: 'face-Hectic.svg',
+  LOVING_GRIN_1: 'face-Loving Grin 1.svg',
+  LOVING_GRIN_2: 'face-Loving Grin 2.svg',
+  MONSTER: 'face-Monster.svg',
+  OLD: 'face-Old.svg',
+  RAGE: 'face-Rage.svg',
+  SERIOUS: 'face-Serious.svg',
+  BIG_SMILE: 'face-Smile Big.svg',
+  LOL_SMILE: 'face-Smile LOL.svg',
+  TEETH_GAP_SMILE: 'face-Smile Teeth Gap.svg',
+  SMILE: 'face-Smile.svg',
+  SOLEMN: 'face-Solemn.svg',
+  SUSPICIOUS: 'face-Suspicious.svg',
+  TIRED: 'face-Tired.svg',
+  VERY_ANGRY: 'face-Very Angry.svg',
+  WITH_MASK_CALM: 'face-With_Mask-Calm.svg',
+  WITH_MASK_CHEERS: 'face-With_Mask-Cheers.svg',
+  WITH_MASK_SMILE: 'face-With_Mask-Smile.svg'
+};
+var HEAD = {
+  AFRO: 'head-Afro.svg',
+  BANGS: 'head-Bangs.svg',
+  BANGS_2: 'head-Bangs 2.svg',
+  BANTU_KNOTS: 'head-Bantu Knots.svg',
+  BEAR: 'head-Bear.svg',
+  BUN_1: 'head-Bun.svg',
+  BUN_2: 'head-Bun-1.svg',
+  BUN_3: 'head-Bun 2.svg',
+  BUNS: 'head-Buns.svg',
+  CORNROWS_1: 'head-Cornrows.svg',
+  CORNROWS_2: 'head-Cornrows 2.svg',
+  DREADS_1: 'head-Dreads 1.svg',
+  DREADS_2: 'head-Dreads 2.svg',
+  FLAT_TOP_LONG: 'head-Flat Top Long.svg',
+  FLAT_TOP: 'head-Flat Top.svg',
+  GREY_BUN: 'head-Gray Bun.svg',
+  GREY_MEDIUM: 'head-Grey Medium.svg',
+  GREY_SHORT: 'head-Grey Short.svg',
+  HAT_BEANIE: 'head-hat-beanie.svg',
+  HAT_HIP: 'head-hat-hip.svg',
+  HIJAB: 'head-Hijab.svg',
+  LONG_AFRO: 'head-Long Afro.svg',
+  LONG_BANGS: 'head-Long Bangs.svg',
+  LONG_CURLY: 'head-Long Curly.svg',
+  LONG: 'head-Long.svg',
+  MEDIUM_1: 'head-Medium 1.svg',
+  MEDIUM_2: 'head-Medium 2.svg',
+  MEDIUM_3: 'head-Medium 3.svg',
+  BANGS_MEDIUM_1: 'head-Medium Bangs.svg',
+  BANGS_MEDIUM_2: 'head-Medium Bangs 2.svg',
+  BANGS_MEDIUM_3: 'head-Medium Bangs 3.svg',
+  STRAIGHT_MEDIUM: 'head-Medium Straight.svg',
+  MOHAWK_1: 'head-Mohawk.svg',
+  MOHAWK_2: 'head-Mohawk 2.svg',
+  NO_HAIR_1: 'head-No Hair 1.svg',
+  NO_HAIR_2: 'head-No Hair 2.svg',
+  NO_HAIR_3: 'head-No Hair 3.svg',
+  POMP: 'head-Pomp.svg',
+  SHAVED_1: 'head-Shaved 1.svg',
+  SHAVED_2: 'head-Shaved 2.svg',
+  SHAVED_3: 'head-Shaved 3.svg',
+  SHORT_1: 'head-Short 1.svg',
+  SHORT_2: 'head-Short 2.svg',
+  SHORT_3: 'head-Short 3.svg',
+  SHORT_4: 'head-Short 4.svg',
+  SHORT_5: 'head-Short 5.svg',
+  TURBAN: 'head-Turban.svg',
+  TWISTS_1: 'head-Twists.svg',
+  TWISTS_2: 'head-Twists 2.svg'
+};
+var FACIAL_HAIR = {
+  CHIN: 'facial-hair-Chin.svg',
+  FULL_1: 'facial-hair-Full.svg',
+  FULL_2: 'facial-hair-Full 2.svg',
+  FULL_3: 'facial-hair-Full 3.svg',
+  FULL_4: 'facial-hair-Full 4.svg',
+  GOATEE_1: 'facial-hair-Goatee 1.svg',
+  GOATEE_2: 'facial-hair-Goatee 2.svg',
+  MUSTACHE_1: 'facial-hair-Moustache 1.svg',
+  MUSTACHE_2: 'facial-hair-Moustache 2.svg',
+  MUSTACHE_3: 'facial-hair-Moustache 3.svg',
+  MUSTACHE_4: 'facial-hair-Moustache 4.svg',
+  MUSTACHE_5: 'facial-hair-Moustache 5.svg',
+  MUSTACHE_6: 'facial-hair-Moustache 6.svg',
+  MUSTACHE_7: 'facial-hair-Moustache 7.svg',
+  MUSTACHE_8: 'facial-hair-Moustache 8.svg',
+  MUSTACHE_9: 'facial-hair-Moustache 9.svg'
+};
+
+var OpenPeeps = function OpenPeeps(_ref) {
+  var _ref$face = _ref.face,
+      face = _ref$face === void 0 ? FACE.LOVING_GRIN_1 : _ref$face,
+      _ref$head = _ref.head,
+      head = _ref$head === void 0 ? HEAD.POMP : _ref$head,
+      _ref$facialHair = _ref.facialHair,
+      facialHair = _ref$facialHair === void 0 ? FACIAL_HAIR.CHIN : _ref$facialHair,
+      _ref$accessory = _ref.accessory,
+      accessory = _ref$accessory === void 0 ? ACCESSORY.GLASSES_1 : _ref$accessory;
+  var DomElement = html(_templateObject());
+
+  var init =
+  /*#__PURE__*/
+  function () {
+    var _ref2 = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee() {
+      var faceSVG, headSVG, facialHairSVG, accessorySVG, faceElement, headElement, facialHairElement, accessoryElement, svgElement;
+      return regeneratorRuntime.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              _context.next = 2;
+              return fetch("/assets/OpenPeeps/face/".concat(face));
+
+            case 2:
+              _context.next = 4;
+              return _context.sent.text();
+
+            case 4:
+              faceSVG = _context.sent;
+              _context.next = 7;
+              return fetch("/assets/OpenPeeps/head/".concat(head));
+
+            case 7:
+              _context.next = 9;
+              return _context.sent.text();
+
+            case 9:
+              headSVG = _context.sent;
+              _context.next = 12;
+              return fetch("/assets/OpenPeeps/facialHair/".concat(facialHair));
+
+            case 12:
+              _context.next = 14;
+              return _context.sent.text();
+
+            case 14:
+              facialHairSVG = _context.sent;
+              _context.next = 17;
+              return fetch("/assets/OpenPeeps/accessory/".concat(accessory));
+
+            case 17:
+              _context.next = 19;
+              return _context.sent.text();
+
+            case 19:
+              accessorySVG = _context.sent;
+              faceElement = html(_templateObject2(), faceSVG);
+              headElement = html(_templateObject3(), headSVG);
+              facialHairElement = html(_templateObject4(), facialHairSVG);
+              accessoryElement = html(_templateObject5(), accessorySVG);
+              svgElement = html(_templateObject6(), 850, 850, 850, 850, Array.from(headElement.childNodes), $$('path', faceElement), $$('path', facialHairElement), $$('path', accessoryElement));
+              DomElement.appendChild(svgElement);
+
+            case 26:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee);
+    }));
+
+    return function init() {
+      return _ref2.apply(this, arguments);
+    };
+  }();
+
+  init();
+  return DomElement;
+};
+
+module.exports = {
+  OpenPeeps: OpenPeeps,
+  FACE: FACE,
+  FACIAL_HAIR: FACIAL_HAIR,
+  ACCESSORY: ACCESSORY,
+  HEAD: HEAD
+};
+
+},{"@forgjs/noframework":1}],352:[function(require,module,exports){
 "use strict";
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -12126,7 +13044,7 @@ module.exports = {
   unwrapSignKey: unwrapSignKey
 };
 
-},{}],348:[function(require,module,exports){
+},{}],353:[function(require,module,exports){
 "use strict";
 
 function _templateObject() {
@@ -12150,6 +13068,8 @@ require('babel-polyfill'); // const socketIo = require('socket.io-client');
 var _require2 = require('./rooter'),
     Component = _require2.Component;
 
+var GlobalEvents = require('./GlobalEvents');
+
 var api = require('./api');
 
 var App = function App() {
@@ -12160,7 +13080,7 @@ var App = function App() {
 document.body.appendChild(App());
 api.init();
 
-},{"./api":338,"./rooter":349,"@forgjs/noframework":1,"babel-polyfill":2}],349:[function(require,module,exports){
+},{"./GlobalEvents":334,"./api":339,"./rooter":354,"@forgjs/noframework":1,"babel-polyfill":2}],354:[function(require,module,exports){
 "use strict";
 
 function _templateObject() {
@@ -12186,10 +13106,13 @@ var LogIn = require('./LogIn');
 
 var SignUp = require('./SignUp');
 
+var OpenPeeps = require('./OpenPeeps');
+
 var ROUTES = {
   '/': LoggedIn(),
   '/log-in': LogIn(),
-  '/sign-up': SignUp()
+  '/sign-up': SignUp(),
+  '/open-peeps': OpenPeeps()
 };
 routerEvents.current = html(_templateObject());
 routerEvents.subscribe('reroute', function (url) {
@@ -12211,7 +13134,7 @@ module.exports = {
   ROUTES: ROUTES
 };
 
-},{"./GlobalEvents":334,"./LogIn":335,"./LoggedIn":336,"./SignUp":337,"@forgjs/noframework":1}],350:[function(require,module,exports){
+},{"./GlobalEvents":334,"./LogIn":335,"./LoggedIn":336,"./OpenPeeps":337,"./SignUp":338,"@forgjs/noframework":1}],355:[function(require,module,exports){
 "use strict";
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -12344,4 +13267,4 @@ module.exports = {
   post: post
 };
 
-},{}]},{},[348]);
+},{}]},{},[353]);

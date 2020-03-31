@@ -1,11 +1,10 @@
-const { Schema, model } = require('mongoose');
+const { Schema, model, Types } = require('mongoose');
 
 const UserSchema = new Schema({
   username: {
     type: String,
     match: /^[a-z0-9](_(?!(\.|_))|\.(?!(_|\.))|[a-z0-9]){1,18}[a-z0-9]$/,
     required: true,
-
   },
 
   userImage: {
@@ -17,15 +16,30 @@ const UserSchema = new Schema({
     required: true,
   },
 
-  privetKey: {
-    type: String,
+  privateRSAKey: {
+    type: Object,
     required: true,
   },
 
-  publicKey: {
-    type: String,
+  publicRSAKey: {
+    type: Object,
     required: true,
   },
+
+  privateSignKey: {
+    type: Object,
+    required: true,
+  },
+
+  publicSignKey: {
+    type: Object,
+    required: true,
+  },
+
+  friends: [{
+    type: Types.ObjectId,
+    ref: 'User',
+  }],
 
   email: {
     type: String,
