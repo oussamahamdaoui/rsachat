@@ -16,7 +16,7 @@
   "dependencies": {
     "@forgjs/noframework": "^1.2.0",
     "babel-polyfill": "^6.26.0",
-    "bcrypt": "^4.0.1",
+    "bcrypt": "^5.0.0",
     "dkim-signer": "^0.2.2",
     "express": "^4.17.1",
     "feather-icons": "^4.26.0",
