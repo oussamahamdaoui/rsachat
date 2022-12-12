@@ -18,7 +18,7 @@
     "babel-polyfill": "^6.26.0",
     "bcrypt": "^5.0.0",
     "dkim-signer": "^0.2.2",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "feather-icons": "^4.26.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.5",
